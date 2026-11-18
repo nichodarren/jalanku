@@ -1,0 +1,11 @@
+{
+  "name": "JalanKu",
+  "short_name": "JalanKu",
+  "description": "Lapor jalan rusak di Jakarta cukup dengan foto",
+  "lang": "id",
+  "start_url": "/#/peta",
+  "display": "standalone",
+  "background_color": "#f6f8fa",
+  "theme_color": "#0f5b78",
+  "icons": [{ "src": "/ikon/ikon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

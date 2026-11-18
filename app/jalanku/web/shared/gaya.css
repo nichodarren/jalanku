@@ -1,0 +1,77 @@
+/* Design system dasar. Pemilik: M1, reviewer UX: M6. Token warna & ukuran di :root
+   Aturan: tidak ada atribut style= di HTML/JS (CSP style-src 'self'); pakai kelas di sini atau CSS modul. */
+
+:root {
+  --warna-utama: #0f5b78;
+  --warna-utama-gelap: #0a4257;
+  --warna-rusak: #c62828;
+  --warna-kurang-baik: #ef6c00;
+  --warna-dikerjakan: #1565c0;
+  --warna-selesai: #2e7d32;
+  --warna-teks: #1b1f23;
+  --warna-redup: #5f6b76;
+  --warna-latar: #f6f8fa;
+  --warna-kartu: #ffffff;
+  --warna-garis: #d8dee4;
+  --radius: 12px;
+  --jarak: 16px;
+  --sentuh-min: 44px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--warna-teks);
+  background: var(--warna-latar);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+main { flex: 1; width: 100%; max-width: 960px; margin: 0 auto; padding: var(--jarak); }
+main:focus { outline: none; }
+a { color: var(--warna-utama); }
+h1 { font-size: 1.4rem; margin: 0 0 12px; }
+
+.lewati { position: absolute; left: -999px; }
+.lewati:focus { left: 8px; top: 8px; background: #fff; padding: 8px; z-index: 1000; }
+
+.kepala {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;
+  padding: 8px var(--jarak); background: var(--warna-utama); color: #fff;
+}
+.merek { color: #fff; font-weight: 700; font-size: 1.15rem; text-decoration: none; }
+#navigasi { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; }
+#navigasi a {
+  color: #fff; text-decoration: none; padding: 10px 12px; border-radius: 8px;
+  min-height: var(--sentuh-min); display: inline-flex; align-items: center;
+}
+#navigasi a.aktif, #navigasi a:hover { background: var(--warna-utama-gelap); }
+.status-akun { font-size: 0.85rem; opacity: 0.9; }
+
+.kaki { padding: 12px var(--jarak); font-size: 0.8rem; color: var(--warna-redup); text-align: center; }
+
+.kartu {
+  background: var(--warna-kartu); border: 1px solid var(--warna-garis);
+  border-radius: var(--radius); padding: var(--jarak); margin-bottom: var(--jarak);
+}
+.stub { border-style: dashed; }
+.redup { color: var(--warna-redup); font-size: 0.9rem; }
+.galat { color: var(--warna-rusak); font-weight: 600; }
+
+button, .tombol {
+  min-height: var(--sentuh-min); padding: 10px 16px; border-radius: 8px; border: 0;
+  background: var(--warna-utama); color: #fff; font-size: 1rem; cursor: pointer;
+}
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #ffb300; outline-offset: 2px; }
+label { display: block; margin: 12px 0 4px; font-weight: 600; }
+input, select, textarea {
+  width: 100%; min-height: var(--sentuh-min); padding: 8px 10px; font-size: 1rem;
+  border: 1px solid var(--warna-garis); border-radius: 8px;
+}
+
+.peta { height: 60vh; min-height: 320px; border-radius: var(--radius); border: 1px solid var(--warna-garis); }
+
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  background: var(--warna-teks); color: #fff; padding: 12px 16px; border-radius: 8px; z-index: 2000;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
