@@ -1,0 +1,560 @@
+{
+  "ai": {
+    "FOTO_ADMIN": {
+      "jenis": "konstanta",
+      "nilai": "'admin'"
+    },
+    "FOTO_TERIMA": {
+      "jenis": "konstanta",
+      "nilai": "'terima'"
+    },
+    "FOTO_TOLAK": {
+      "jenis": "konstanta",
+      "nilai": "'tolak'"
+    },
+    "HasilFoto": {
+      "field": [
+        "kelas: str | None",
+        "confidence: float | None",
+        "kemiripan: float | None",
+        "keputusan: str",
+        "alasan: str",
+        "probabilitas: dict[str, float]"
+      ],
+      "jenis": "dataclass"
+    },
+    "KELAS_BAIK": {
+      "jenis": "konstanta",
+      "nilai": "'baik'"
+    },
+    "KELAS_KURANG_BAIK": {
+      "jenis": "konstanta",
+      "nilai": "'kurang_baik'"
+    },
+    "KELAS_RUSAK": {
+      "jenis": "konstanta",
+      "nilai": "'rusak'"
+    },
+    "KEPUTUSAN_DITOLAK": {
+      "jenis": "konstanta",
+      "nilai": "'ditolak'"
+    },
+    "KEPUTUSAN_PERLU_ADMIN": {
+      "jenis": "konstanta",
+      "nilai": "'perlu_admin'"
+    },
+    "KEPUTUSAN_TERVERIFIKASI": {
+      "jenis": "konstanta",
+      "nilai": "'terverifikasi'"
+    },
+    "KEPUTUSAN_TIDAK_AKTIF": {
+      "jenis": "konstanta",
+      "nilai": "'tidak_aktif'"
+    },
+    "KeputusanAI": {
+      "field": [
+        "keputusan: str",
+        "tingkat: str | None",
+        "hasil_foto: list[HasilFoto]",
+        "versi_model: str | None"
+      ],
+      "jenis": "dataclass"
+    },
+    "info_model": {
+      "jenis": "fungsi",
+      "tanda_tangan": "() -> 'dict'"
+    },
+    "model_aktif": {
+      "jenis": "fungsi",
+      "tanda_tangan": "() -> 'bool'"
+    },
+    "periksa_foto": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(data: 'bytes') -> 'HasilFoto'"
+    },
+    "putuskan": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(hasil: 'list[HasilFoto]') -> 'KeputusanAI'"
+    },
+    "router": {
+      "jenis": "router"
+    }
+  },
+  "akun": {
+    "AkunDihapus": {
+      "field": [
+        "pengguna_id: int"
+      ],
+      "jenis": "dataclass"
+    },
+    "PERAN_ADMIN": {
+      "jenis": "konstanta",
+      "nilai": "'admin'"
+    },
+    "PERAN_PELAPOR": {
+      "jenis": "konstanta",
+      "nilai": "'pelapor'"
+    },
+    "PERAN_PETUGAS": {
+      "jenis": "konstanta",
+      "nilai": "'petugas'"
+    },
+    "Pengguna": {
+      "field": [
+        "id: int",
+        "email: str",
+        "nama: str",
+        "peran: str",
+        "instansi_id: str | None",
+        "terverifikasi: bool"
+      ],
+      "jenis": "dataclass"
+    },
+    "ambil_pengguna": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(pengguna_id: 'int') -> 'Pengguna | None'"
+    },
+    "pengguna_opsional": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(request: 'Request') -> 'Pengguna | None'"
+    },
+    "router": {
+      "jenis": "router"
+    },
+    "router_dev": {
+      "jenis": "router"
+    },
+    "wajib_masuk": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(pengguna: 'Pengguna | None' = Depends(pengguna_opsional)) -> 'Pengguna'"
+    },
+    "wajib_peran": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(*peran: 'str')"
+    },
+    "wajib_terverifikasi": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(pengguna: 'Pengguna' = Depends(wajib_masuk)) -> 'Pengguna'"
+    }
+  },
+  "core": {
+    "BelumDibuat": {
+      "induk": "GalatDomain",
+      "jenis": "galat",
+      "kode_http": 501
+    },
+    "GalatDomain": {
+      "induk": "Exception",
+      "jenis": "galat",
+      "kode_http": 400
+    },
+    "Konflik": {
+      "induk": "GalatDomain",
+      "jenis": "galat",
+      "kode_http": 409
+    },
+    "Pengaturan": {
+      "field": [
+        "mode: str",
+        "folder_data: Path",
+        "url_dasar: str",
+        "ai_aktif: bool",
+        "ai_threshold_confidence: float | None",
+        "ai_threshold_kemiripan: float | None",
+        "wajib_foto_selesai: bool",
+        "smtp_host: str",
+        "smtp_port: int",
+        "smtp_user: str",
+        "smtp_password: str",
+        "email_pengirim: str"
+      ],
+      "jenis": "dataclass"
+    },
+    "PerluMasuk": {
+      "induk": "GalatDomain",
+      "jenis": "galat",
+      "kode_http": 401
+    },
+    "TerlaluBanyak": {
+      "induk": "GalatDomain",
+      "jenis": "galat",
+      "kode_http": 429
+    },
+    "TidakBerhak": {
+      "induk": "GalatDomain",
+      "jenis": "galat",
+      "kode_http": 403
+    },
+    "TidakDitemukan": {
+      "induk": "GalatDomain",
+      "jenis": "galat",
+      "kode_http": 404
+    },
+    "TidakValid": {
+      "induk": "GalatDomain",
+      "jenis": "galat",
+      "kode_http": 400
+    },
+    "batasi": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(kunci: 'str', maks: 'int', jendela_detik: 'int', pesan: 'str | None' = None) -> 'None'"
+    },
+    "hapus_berkas": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(nama: 'str') -> 'None'"
+    },
+    "jalankan_migrasi": {
+      "jenis": "fungsi",
+      "tanda_tangan": "() -> 'list[str]'"
+    },
+    "jalur_berkas": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(nama: 'str') -> 'Path'"
+    },
+    "jarak_meter": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(lat1: 'float', lon1: 'float', lat2: 'float', lon2: 'float') -> 'float'"
+    },
+    "ke_datetime": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(iso: 'str') -> 'datetime'"
+    },
+    "koneksi": {
+      "jenis": "fungsi",
+      "tanda_tangan": "() -> 'sqlite3.Connection'"
+    },
+    "langganan": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(tipe: 'type', fungsi: 'Callable[[Any], None]') -> 'None'"
+    },
+    "muat_ulang_pengaturan": {
+      "jenis": "fungsi",
+      "tanda_tangan": "() -> 'Pengaturan'"
+    },
+    "pengaturan": {
+      "jenis": "fungsi",
+      "tanda_tangan": "() -> 'Pengaturan'"
+    },
+    "sekarang": {
+      "jenis": "fungsi",
+      "tanda_tangan": "() -> 'str'"
+    },
+    "simpan_berkas": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(data: 'bytes', akhiran: 'str' = '.jpg') -> 'str'"
+    },
+    "terbitkan": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(kejadian: 'object') -> 'None'"
+    },
+    "transaksi": {
+      "jenis": "fungsi",
+      "tanda_tangan": "() -> 'Iterator[sqlite3.Connection]'"
+    }
+  },
+  "laporan": {
+    "EntriTimeline": {
+      "field": [
+        "dari_status: str | None",
+        "ke_status: str",
+        "pelaku: str",
+        "catatan: str",
+        "waktu: str"
+      ],
+      "jenis": "dataclass"
+    },
+    "Foto": {
+      "field": [
+        "id: int",
+        "laporan_id: int",
+        "jenis: str",
+        "berkas: str",
+        "hasil_ai: dict | None"
+      ],
+      "jenis": "dataclass"
+    },
+    "Laporan": {
+      "field": [
+        "id: int",
+        "nomor: str",
+        "pelapor_id: int | None",
+        "lat: float",
+        "lon: float",
+        "akurasi_gps: float | None",
+        "sumber_lokasi: str",
+        "kota: str | None",
+        "kecamatan: str | None",
+        "instansi_id: str",
+        "status: str",
+        "tingkat: str | None",
+        "keterangan: str",
+        "diperiksa_oleh: str | None",
+        "keputusan_ai: str | None",
+        "versi_model: str | None",
+        "label_akhir: str | None",
+        "induk_id: int | None",
+        "banding_pada: str | None",
+        "simulasi: bool",
+        "dibuat_pada: str",
+        "diverifikasi_pada: str | None",
+        "mulai_dikerjakan_pada: str | None",
+        "selesai_pada: str | None"
+      ],
+      "jenis": "dataclass"
+    },
+    "LaporanBaru": {
+      "field": [
+        "pelapor_id: int | None",
+        "lat: float",
+        "lon: float",
+        "sumber_lokasi: str",
+        "kota: str | None",
+        "kecamatan: str | None",
+        "instansi_id: str",
+        "foto: list[bytes]",
+        "keputusan_ai: str",
+        "tingkat: str | None",
+        "hasil_ai: list[dict]",
+        "akurasi_gps: float | None",
+        "keterangan: str",
+        "versi_model: str | None",
+        "simulasi: bool"
+      ],
+      "jenis": "dataclass"
+    },
+    "LaporanDibuat": {
+      "field": [
+        "laporan_id: int",
+        "nomor: str",
+        "status: str",
+        "pelapor_id: int | None"
+      ],
+      "jenis": "dataclass"
+    },
+    "PELAKU_ADMIN": {
+      "jenis": "konstanta",
+      "nilai": "'admin'"
+    },
+    "PELAKU_AI": {
+      "jenis": "konstanta",
+      "nilai": "'ai'"
+    },
+    "PELAKU_PELAPOR": {
+      "jenis": "konstanta",
+      "nilai": "'pelapor'"
+    },
+    "PELAKU_PETUGAS": {
+      "jenis": "konstanta",
+      "nilai": "'petugas'"
+    },
+    "PELAKU_SISTEM": {
+      "jenis": "konstanta",
+      "nilai": "'sistem'"
+    },
+    "STATUS_AKTIF": {
+      "jenis": "konstanta",
+      "nilai": "('menunggu_verifikasi', 'belum_dikerjakan', 'sedang_dikerjakan')"
+    },
+    "STATUS_BELUM": {
+      "jenis": "konstanta",
+      "nilai": "'belum_dikerjakan'"
+    },
+    "STATUS_DIGABUNG": {
+      "jenis": "konstanta",
+      "nilai": "'digabung'"
+    },
+    "STATUS_DITOLAK": {
+      "jenis": "konstanta",
+      "nilai": "'ditolak'"
+    },
+    "STATUS_MENUNGGU": {
+      "jenis": "konstanta",
+      "nilai": "'menunggu_verifikasi'"
+    },
+    "STATUS_PUBLIK": {
+      "jenis": "konstanta",
+      "nilai": "('belum_dikerjakan', 'sedang_dikerjakan', 'selesai', 'digabung')"
+    },
+    "STATUS_SEDANG": {
+      "jenis": "konstanta",
+      "nilai": "'sedang_dikerjakan'"
+    },
+    "STATUS_SELESAI": {
+      "jenis": "konstanta",
+      "nilai": "'selesai'"
+    },
+    "StatusBerubah": {
+      "field": [
+        "laporan_id: int",
+        "nomor: str",
+        "dari_status: str",
+        "ke_status: str",
+        "pelaku: str",
+        "pelapor_id: int | None"
+      ],
+      "jenis": "dataclass"
+    },
+    "TINGKAT_KURANG_BAIK": {
+      "jenis": "konstanta",
+      "nilai": "'kurang_baik'"
+    },
+    "TINGKAT_RUSAK": {
+      "jenis": "konstanta",
+      "nilai": "'rusak'"
+    },
+    "URUTAN_TINGKAT": {
+      "jenis": "konstanta",
+      "nilai": "{'kurang_baik': 1, 'rusak': 2}"
+    },
+    "ambil_laporan": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(nomor: 'str') -> 'Laporan'"
+    },
+    "ambil_untuk_penonton": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(nomor: 'str', penonton: 'Pengguna | None') -> 'Laporan'"
+    },
+    "boleh_dilihat": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(laporan: 'Laporan', penonton: 'Pengguna | None') -> 'bool'"
+    },
+    "buat_laporan": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(data: 'LaporanBaru') -> 'Laporan'"
+    },
+    "cari_aktif_dekat": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(lat: 'float', lon: 'float', radius_m: 'float' = 25) -> 'list[tuple[Laporan, float]]'"
+    },
+    "cari_laporan": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(*, status: 'tuple[str, ...] | list[str] | str | None' = None, instansi_id: 'str | None' = None, kota: 'str | None' = None, tingkat: 'str | None' = None, pelapor_id: 'int | None' = None, batas: 'int' = 1000) -> 'list[Laporan]'"
+    },
+    "daftar_foto": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(laporan_id: 'int') -> 'list[Foto]'"
+    },
+    "jumlah_dukungan": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(laporan_id: 'int') -> 'int'"
+    },
+    "pasang": {
+      "jenis": "fungsi",
+      "tanda_tangan": "() -> 'None'"
+    },
+    "pendukung": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(laporan_id: 'int') -> 'list[int]'"
+    },
+    "router": {
+      "jenis": "router"
+    },
+    "tambah_dukungan": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(laporan_id: 'int', pengguna_id: 'int') -> 'bool'"
+    },
+    "timeline": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(laporan_id: 'int') -> 'list[EntriTimeline]'"
+    },
+    "ubah_status": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(nomor: 'str', ke: 'str', pelaku: 'str', *, pengguna_id: 'int | None' = None, catatan: 'str' = '', tingkat: 'str | None' = None, induk_nomor: 'str | None' = None, label_akhir: 'str | None' = None, foto_sesudah: 'bytes | None' = None, hasil_ai_sesudah: 'dict | None' = None) -> 'Laporan'"
+    },
+    "ubah_tingkat": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(nomor: 'str', tingkat: 'str', pengguna_id: 'int', alasan: 'str') -> 'Laporan'"
+    }
+  },
+  "moderasi": {
+    "router": {
+      "jenis": "router"
+    }
+  },
+  "notifikasi": {
+    "pasang": {
+      "jenis": "fungsi",
+      "tanda_tangan": "() -> 'None'"
+    },
+    "router": {
+      "jenis": "router"
+    }
+  },
+  "pelaporan": {
+    "router": {
+      "jenis": "router"
+    }
+  },
+  "penanganan": {
+    "router": {
+      "jenis": "router"
+    }
+  },
+  "peta": {
+    "router": {
+      "jenis": "router"
+    }
+  },
+  "statistik": {
+    "router": {
+      "jenis": "router"
+    }
+  },
+  "wilayah": {
+    "HasilWilayah": {
+      "field": [
+        "di_dalam: bool",
+        "kota: str | None",
+        "kecamatan: str | None",
+        "instansi: Instansi | None"
+      ],
+      "jenis": "dataclass"
+    },
+    "ID_DINAS": {
+      "jenis": "konstanta",
+      "nilai": "'DINAS_BM'"
+    },
+    "Instansi": {
+      "field": [
+        "id: str",
+        "nama: str",
+        "nama_pendek: str",
+        "kota: str | None",
+        "kanal_nama: str",
+        "kanal_url: str"
+      ],
+      "jenis": "dataclass"
+    },
+    "KANAL_LUAR_WILAYAH": {
+      "jenis": "konstanta",
+      "nilai": "('SP4N-LAPOR!', 'https://www.lapor.go.id/')"
+    },
+    "KOTA": {
+      "jenis": "konstanta",
+      "nilai": "('Jakarta Pusat', 'Jakarta Utara', 'Jakarta Barat', 'Jakarta Selatan', 'Jakarta Timur')"
+    },
+    "ambil_instansi": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(instansi_id: 'str') -> 'Instansi'"
+    },
+    "batas_wilayah_geojson": {
+      "jenis": "fungsi",
+      "tanda_tangan": "() -> 'dict'"
+    },
+    "boleh_menangani": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(instansi_id: 'str', kota: 'str | None') -> 'bool'"
+    },
+    "daftar_instansi": {
+      "jenis": "fungsi",
+      "tanda_tangan": "() -> 'list[Instansi]'"
+    },
+    "router": {
+      "jenis": "router"
+    },
+    "tentukan_wilayah": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(lat: 'float', lon: 'float') -> 'HasilWilayah'"
+    }
+  }
+}

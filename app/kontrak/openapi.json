@@ -1,0 +1,3229 @@
+{
+  "components": {
+    "schemas": {
+      "AksiKeluaran": {
+        "properties": {
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tingkat": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tingkat"
+          }
+        },
+        "required": [
+          "nomor",
+          "status",
+          "tingkat"
+        ],
+        "title": "AksiKeluaran",
+        "type": "object"
+      },
+      "Body_kirim_laporan_api_laporan_post": {
+        "properties": {
+          "abaikan_duplikat": {
+            "default": false,
+            "title": "Abaikan Duplikat",
+            "type": "boolean"
+          },
+          "akurasi_gps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Akurasi Gps"
+          },
+          "foto": {
+            "description": "1-3 foto JPEG/PNG/WebP, maks 10 MB",
+            "items": {
+              "contentMediaType": "application/octet-stream",
+              "type": "string"
+            },
+            "title": "Foto",
+            "type": "array"
+          },
+          "keterangan": {
+            "default": "",
+            "maxLength": 280,
+            "title": "Keterangan",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "sumber_lokasi": {
+            "description": "exif | gps | manual",
+            "title": "Sumber Lokasi",
+            "type": "string"
+          }
+        },
+        "required": [
+          "foto",
+          "lat",
+          "lon",
+          "sumber_lokasi"
+        ],
+        "title": "Body_kirim_laporan_api_laporan_post",
+        "type": "object"
+      },
+      "Body_periksa_api_ai_periksa_post": {
+        "properties": {
+          "foto": {
+            "contentMediaType": "application/octet-stream",
+            "title": "Foto",
+            "type": "string"
+          }
+        },
+        "required": [
+          "foto"
+        ],
+        "title": "Body_periksa_api_ai_periksa_post",
+        "type": "object"
+      },
+      "Body_ubah_status_api_petugas_laporan__nomor__status_post": {
+        "properties": {
+          "catatan": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Catatan",
+            "type": "string"
+          },
+          "foto": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "wajib bila ke=selesai (BR-08)",
+            "title": "Foto"
+          },
+          "ke": {
+            "description": "sedang_dikerjakan | selesai",
+            "title": "Ke",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ke"
+        ],
+        "title": "Body_ubah_status_api_petugas_laporan__nomor__status_post",
+        "type": "object"
+      },
+      "DaftarMasukan": {
+        "properties": {
+          "email": {
+            "maxLength": 254,
+            "title": "Email",
+            "type": "string"
+          },
+          "nama": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Nama",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Password",
+            "type": "string"
+          },
+          "setuju_privasi": {
+            "title": "Setuju Privasi",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "nama",
+          "email",
+          "password",
+          "setuju_privasi"
+        ],
+        "title": "DaftarMasukan",
+        "type": "object"
+      },
+      "DetailLaporanKeluaran": {
+        "properties": {
+          "dibuat_pada": {
+            "title": "Dibuat Pada",
+            "type": "string"
+          },
+          "diperiksa_oleh": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diperiksa Oleh"
+          },
+          "diverifikasi_pada": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diverifikasi Pada"
+          },
+          "foto": {
+            "items": {
+              "$ref": "#/components/schemas/FotoKeluaran"
+            },
+            "title": "Foto",
+            "type": "array"
+          },
+          "instansi_id": {
+            "title": "Instansi Id",
+            "type": "string"
+          },
+          "jumlah_dukungan": {
+            "title": "Jumlah Dukungan",
+            "type": "integer"
+          },
+          "kecamatan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kecamatan"
+          },
+          "keterangan": {
+            "title": "Keterangan",
+            "type": "string"
+          },
+          "kota": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kota"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "mulai_dikerjakan_pada": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mulai Dikerjakan Pada"
+          },
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          },
+          "selesai_pada": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selesai Pada"
+          },
+          "simulasi": {
+            "title": "Simulasi",
+            "type": "boolean"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/EntriTimelineKeluaran"
+            },
+            "title": "Timeline",
+            "type": "array"
+          },
+          "tingkat": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tingkat"
+          }
+        },
+        "required": [
+          "nomor",
+          "status",
+          "tingkat",
+          "lat",
+          "lon",
+          "kota",
+          "kecamatan",
+          "instansi_id",
+          "keterangan",
+          "diperiksa_oleh",
+          "jumlah_dukungan",
+          "simulasi",
+          "dibuat_pada",
+          "diverifikasi_pada",
+          "mulai_dikerjakan_pada",
+          "selesai_pada",
+          "foto",
+          "timeline"
+        ],
+        "title": "DetailLaporanKeluaran",
+        "type": "object"
+      },
+      "DukunganKeluaran": {
+        "properties": {
+          "baru": {
+            "title": "Baru",
+            "type": "boolean"
+          },
+          "jumlah_dukungan": {
+            "title": "Jumlah Dukungan",
+            "type": "integer"
+          },
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nomor",
+          "jumlah_dukungan",
+          "baru"
+        ],
+        "title": "DukunganKeluaran",
+        "type": "object"
+      },
+      "DuplikatAntrean": {
+        "properties": {
+          "jarak_m": {
+            "title": "Jarak M",
+            "type": "number"
+          },
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nomor",
+          "jarak_m"
+        ],
+        "title": "DuplikatAntrean",
+        "type": "object"
+      },
+      "DuplikatKeluaran": {
+        "properties": {
+          "jarak_m": {
+            "title": "Jarak M",
+            "type": "number"
+          },
+          "jumlah_dukungan": {
+            "title": "Jumlah Dukungan",
+            "type": "integer"
+          },
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tingkat": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tingkat"
+          }
+        },
+        "required": [
+          "nomor",
+          "jarak_m",
+          "status",
+          "tingkat",
+          "jumlah_dukungan"
+        ],
+        "title": "DuplikatKeluaran",
+        "type": "object"
+      },
+      "EmailMasukan": {
+        "properties": {
+          "email": {
+            "maxLength": 254,
+            "title": "Email",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "title": "EmailMasukan",
+        "type": "object"
+      },
+      "EntriJejakKeluaran": {
+        "properties": {
+          "hash": {
+            "title": "Hash",
+            "type": "string"
+          },
+          "ke_status": {
+            "title": "Ke Status",
+            "type": "string"
+          },
+          "pelaku": {
+            "title": "Pelaku",
+            "type": "string"
+          },
+          "waktu": {
+            "title": "Waktu",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ke_status",
+          "pelaku",
+          "waktu",
+          "hash"
+        ],
+        "title": "EntriJejakKeluaran",
+        "type": "object"
+      },
+      "EntriTimelineKeluaran": {
+        "properties": {
+          "catatan": {
+            "title": "Catatan",
+            "type": "string"
+          },
+          "dari_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dari Status"
+          },
+          "ke_status": {
+            "title": "Ke Status",
+            "type": "string"
+          },
+          "pelaku": {
+            "title": "Pelaku",
+            "type": "string"
+          },
+          "waktu": {
+            "title": "Waktu",
+            "type": "string"
+          }
+        },
+        "required": [
+          "dari_status",
+          "ke_status",
+          "pelaku",
+          "catatan",
+          "waktu"
+        ],
+        "title": "EntriTimelineKeluaran",
+        "type": "object"
+      },
+      "FotoAntrean": {
+        "properties": {
+          "hasil_ai": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hasil Ai"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "hasil_ai"
+        ],
+        "title": "FotoAntrean",
+        "type": "object"
+      },
+      "FotoKeluaran": {
+        "properties": {
+          "hasil_ai": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hasil Ai"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "jenis": {
+            "title": "Jenis",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "jenis",
+          "url"
+        ],
+        "title": "FotoKeluaran",
+        "type": "object"
+      },
+      "GabungMasukan": {
+        "properties": {
+          "induk_nomor": {
+            "title": "Induk Nomor",
+            "type": "string"
+          }
+        },
+        "required": [
+          "induk_nomor"
+        ],
+        "title": "GabungMasukan",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HasilFotoKeluaran": {
+        "properties": {
+          "alasan": {
+            "title": "Alasan",
+            "type": "string"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "kelas": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kelas"
+          },
+          "kemiripan": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kemiripan"
+          },
+          "keputusan": {
+            "title": "Keputusan",
+            "type": "string"
+          },
+          "probabilitas": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Probabilitas",
+            "type": "object"
+          }
+        },
+        "required": [
+          "kelas",
+          "confidence",
+          "kemiripan",
+          "keputusan",
+          "alasan",
+          "probabilitas"
+        ],
+        "title": "HasilFotoKeluaran",
+        "type": "object"
+      },
+      "HasilKirimKeluaran": {
+        "properties": {
+          "instansi_id": {
+            "title": "Instansi Id",
+            "type": "string"
+          },
+          "instansi_nama": {
+            "title": "Instansi Nama",
+            "type": "string"
+          },
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          },
+          "pesan": {
+            "title": "Pesan",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tingkat": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tingkat"
+          },
+          "url_status": {
+            "title": "Url Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nomor",
+          "status",
+          "tingkat",
+          "instansi_id",
+          "instansi_nama",
+          "url_status",
+          "pesan"
+        ],
+        "title": "HasilKirimKeluaran",
+        "type": "object"
+      },
+      "InfoModelKeluaran": {
+        "properties": {
+          "aktif": {
+            "title": "Aktif",
+            "type": "boolean"
+          },
+          "threshold_confidence": {
+            "title": "Threshold Confidence",
+            "type": "number"
+          },
+          "threshold_kemiripan": {
+            "title": "Threshold Kemiripan",
+            "type": "number"
+          },
+          "versi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Versi"
+          }
+        },
+        "required": [
+          "aktif",
+          "versi",
+          "threshold_confidence",
+          "threshold_kemiripan"
+        ],
+        "title": "InfoModelKeluaran",
+        "type": "object"
+      },
+      "InstansiKeluaran": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kanal_nama": {
+            "title": "Kanal Nama",
+            "type": "string"
+          },
+          "kanal_url": {
+            "title": "Kanal Url",
+            "type": "string"
+          },
+          "kota": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kota"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "nama_pendek": {
+            "title": "Nama Pendek",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nama",
+          "nama_pendek",
+          "kota",
+          "kanal_nama",
+          "kanal_url"
+        ],
+        "title": "InstansiKeluaran",
+        "type": "object"
+      },
+      "InstansiRingkas": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kanal_nama": {
+            "title": "Kanal Nama",
+            "type": "string"
+          },
+          "kanal_url": {
+            "title": "Kanal Url",
+            "type": "string"
+          },
+          "nama_pendek": {
+            "title": "Nama Pendek",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nama_pendek",
+          "kanal_nama",
+          "kanal_url"
+        ],
+        "title": "InstansiRingkas",
+        "type": "object"
+      },
+      "ItemAntreanKeluaran": {
+        "properties": {
+          "banding": {
+            "description": "True = permintaan peninjauan; tampil paling atas",
+            "title": "Banding",
+            "type": "boolean"
+          },
+          "dibuat_pada": {
+            "title": "Dibuat Pada",
+            "type": "string"
+          },
+          "duplikat": {
+            "items": {
+              "$ref": "#/components/schemas/DuplikatAntrean"
+            },
+            "title": "Duplikat",
+            "type": "array"
+          },
+          "foto": {
+            "items": {
+              "$ref": "#/components/schemas/FotoAntrean"
+            },
+            "title": "Foto",
+            "type": "array"
+          },
+          "kecamatan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kecamatan"
+          },
+          "keterangan": {
+            "title": "Keterangan",
+            "type": "string"
+          },
+          "kota": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kota"
+          },
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nomor",
+          "dibuat_pada",
+          "banding",
+          "kota",
+          "kecamatan",
+          "keterangan",
+          "foto",
+          "duplikat"
+        ],
+        "title": "ItemAntreanKeluaran",
+        "type": "object"
+      },
+      "ItemPetugasKeluaran": {
+        "properties": {
+          "diverifikasi_pada": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diverifikasi Pada"
+          },
+          "jumlah_dukungan": {
+            "title": "Jumlah Dukungan",
+            "type": "integer"
+          },
+          "kecamatan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kecamatan"
+          },
+          "kota": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kota"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          },
+          "skor_prioritas": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "BR-05; null bila fitur prioritas belum aktif",
+            "title": "Skor Prioritas"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tingkat": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tingkat"
+          }
+        },
+        "required": [
+          "nomor",
+          "status",
+          "tingkat",
+          "lat",
+          "lon",
+          "kota",
+          "kecamatan",
+          "jumlah_dukungan",
+          "diverifikasi_pada",
+          "skor_prioritas"
+        ],
+        "title": "ItemPetugasKeluaran",
+        "type": "object"
+      },
+      "JejakKeluaran": {
+        "properties": {
+          "entri": {
+            "items": {
+              "$ref": "#/components/schemas/EntriJejakKeluaran"
+            },
+            "title": "Entri",
+            "type": "array"
+          },
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          },
+          "utuh": {
+            "title": "Utuh",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "nomor",
+          "utuh",
+          "entri"
+        ],
+        "title": "JejakKeluaran",
+        "type": "object"
+      },
+      "KabarKeluaran": {
+        "properties": {
+          "dibaca": {
+            "title": "Dibaca",
+            "type": "boolean"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          },
+          "pesan": {
+            "title": "Pesan",
+            "type": "string"
+          },
+          "waktu": {
+            "title": "Waktu",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nomor",
+          "pesan",
+          "dibaca",
+          "waktu"
+        ],
+        "title": "KabarKeluaran",
+        "type": "object"
+      },
+      "KanalLuar": {
+        "properties": {
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nama",
+          "url"
+        ],
+        "title": "KanalLuar",
+        "type": "object"
+      },
+      "KejadianMasukan": {
+        "properties": {
+          "jenis": {
+            "description": "buka_status",
+            "title": "Jenis",
+            "type": "string"
+          },
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jenis",
+          "nomor"
+        ],
+        "title": "KejadianMasukan",
+        "type": "object"
+      },
+      "KoreksiMasukan": {
+        "properties": {
+          "alasan": {
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Alasan",
+            "type": "string"
+          },
+          "tingkat": {
+            "description": "kurang_baik | rusak",
+            "title": "Tingkat",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tingkat",
+          "alasan"
+        ],
+        "title": "KoreksiMasukan",
+        "type": "object"
+      },
+      "LaporanSayaKeluaran": {
+        "properties": {
+          "bisa_banding": {
+            "title": "Bisa Banding",
+            "type": "boolean"
+          },
+          "dibuat_pada": {
+            "title": "Dibuat Pada",
+            "type": "string"
+          },
+          "foto_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Foto Url"
+          },
+          "kecamatan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kecamatan"
+          },
+          "kota": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kota"
+          },
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tingkat": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tingkat"
+          }
+        },
+        "required": [
+          "nomor",
+          "status",
+          "tingkat",
+          "kota",
+          "kecamatan",
+          "dibuat_pada",
+          "foto_url",
+          "bisa_banding"
+        ],
+        "title": "LaporanSayaKeluaran",
+        "type": "object"
+      },
+      "LokasiMasukan": {
+        "properties": {
+          "akurasi_gps": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Akurasi Gps"
+          },
+          "lat": {
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "LokasiMasukan",
+        "type": "object"
+      },
+      "MasukMasukan": {
+        "properties": {
+          "email": {
+            "maxLength": 254,
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 128,
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "MasukMasukan",
+        "type": "object"
+      },
+      "MetrikAIKeluaran": {
+        "properties": {
+          "banding_diajukan": {
+            "title": "Banding Diajukan",
+            "type": "integer"
+          },
+          "banding_dikabulkan": {
+            "title": "Banding Dikabulkan",
+            "type": "integer"
+          },
+          "jumlah_laporan": {
+            "title": "Jumlah Laporan",
+            "type": "integer"
+          },
+          "koreksi_tingkat": {
+            "title": "Koreksi Tingkat",
+            "type": "integer"
+          },
+          "periode_hari": {
+            "title": "Periode Hari",
+            "type": "integer"
+          },
+          "persen_diputuskan_ai": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persen Diputuskan Ai"
+          },
+          "persen_kesepakatan_admin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persen Kesepakatan Admin"
+          }
+        },
+        "required": [
+          "periode_hari",
+          "jumlah_laporan",
+          "persen_diputuskan_ai",
+          "persen_kesepakatan_admin",
+          "banding_diajukan",
+          "banding_dikabulkan",
+          "koreksi_tingkat"
+        ],
+        "title": "MetrikAIKeluaran",
+        "type": "object"
+      },
+      "PaketKeluaran": {
+        "properties": {
+          "instansi_id": {
+            "title": "Instansi Id",
+            "type": "string"
+          },
+          "kanal_nama": {
+            "title": "Kanal Nama",
+            "type": "string"
+          },
+          "kanal_url": {
+            "title": "Kanal Url",
+            "type": "string"
+          },
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          },
+          "teks": {
+            "description": "Ringkasan siap salin, TANPA identitas pelapor (NFR-PRI-01)",
+            "title": "Teks",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nomor",
+          "instansi_id",
+          "kanal_nama",
+          "kanal_url",
+          "teks"
+        ],
+        "title": "PaketKeluaran",
+        "type": "object"
+      },
+      "PengaturanNotifikasi": {
+        "properties": {
+          "aktif": {
+            "title": "Aktif",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "aktif"
+        ],
+        "title": "PengaturanNotifikasi",
+        "type": "object"
+      },
+      "PenggunaKeluaran": {
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "instansi_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instansi Id"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "peran": {
+            "description": "pelapor | petugas | admin",
+            "title": "Peran",
+            "type": "string"
+          },
+          "terverifikasi": {
+            "title": "Terverifikasi",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "nama",
+          "email",
+          "peran",
+          "instansi_id",
+          "terverifikasi"
+        ],
+        "title": "PenggunaKeluaran",
+        "type": "object"
+      },
+      "Pesan": {
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "title": "Pesan",
+        "type": "object"
+      },
+      "PratinjauLokasiKeluaran": {
+        "properties": {
+          "di_dalam": {
+            "title": "Di Dalam",
+            "type": "boolean"
+          },
+          "duplikat": {
+            "items": {
+              "$ref": "#/components/schemas/DuplikatKeluaran"
+            },
+            "title": "Duplikat",
+            "type": "array"
+          },
+          "instansi": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InstansiRingkas"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "kanal_luar": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KanalLuar"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Arahan bila di luar Jakarta (FR-WIL-02)"
+          },
+          "kecamatan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kecamatan"
+          },
+          "kota": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kota"
+          },
+          "perlu_konfirmasi_pin": {
+            "description": "BR-01 c: akurasi GPS > 50 m",
+            "title": "Perlu Konfirmasi Pin",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "di_dalam",
+          "kota",
+          "kecamatan",
+          "instansi",
+          "perlu_konfirmasi_pin",
+          "kanal_luar",
+          "duplikat"
+        ],
+        "title": "PratinjauLokasiKeluaran",
+        "type": "object"
+      },
+      "StatistikInstansi": {
+        "properties": {
+          "instansi_id": {
+            "title": "Instansi Id",
+            "type": "string"
+          },
+          "jumlah_per_status": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Jumlah Per Status",
+            "type": "object"
+          },
+          "median_jam_dikerjakan": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "null bila n < 5 (BR-04)",
+            "title": "Median Jam Dikerjakan"
+          },
+          "median_jam_selesai": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "null bila n < 5 (BR-04)",
+            "title": "Median Jam Selesai"
+          },
+          "n_dikerjakan": {
+            "title": "N Dikerjakan",
+            "type": "integer"
+          },
+          "n_selesai": {
+            "title": "N Selesai",
+            "type": "integer"
+          },
+          "nama_pendek": {
+            "title": "Nama Pendek",
+            "type": "string"
+          }
+        },
+        "required": [
+          "instansi_id",
+          "nama_pendek",
+          "jumlah_per_status",
+          "median_jam_dikerjakan",
+          "median_jam_selesai",
+          "n_dikerjakan",
+          "n_selesai"
+        ],
+        "title": "StatistikInstansi",
+        "type": "object"
+      },
+      "StatistikKeluaran": {
+        "properties": {
+          "instansi": {
+            "items": {
+              "$ref": "#/components/schemas/StatistikInstansi"
+            },
+            "title": "Instansi",
+            "type": "array"
+          },
+          "label_simulasi": {
+            "description": "True selama petugas diperankan tim (BR-04)",
+            "title": "Label Simulasi",
+            "type": "boolean"
+          },
+          "periode_hari": {
+            "title": "Periode Hari",
+            "type": "integer"
+          },
+          "persen_diputuskan_ai": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persen Diputuskan Ai"
+          }
+        },
+        "required": [
+          "label_simulasi",
+          "periode_hari",
+          "persen_diputuskan_ai",
+          "instansi"
+        ],
+        "title": "StatistikKeluaran",
+        "type": "object"
+      },
+      "StatusPetugasKeluaran": {
+        "properties": {
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "verifikasi_foto": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "US-31: hasil AI atas foto setelah perbaikan (kelas, confidence, alasan)",
+            "title": "Verifikasi Foto"
+          }
+        },
+        "required": [
+          "nomor",
+          "status"
+        ],
+        "title": "StatusPetugasKeluaran",
+        "type": "object"
+      },
+      "TitikPetaKeluaran": {
+        "properties": {
+          "jumlah_dukungan": {
+            "title": "Jumlah Dukungan",
+            "type": "integer"
+          },
+          "kecamatan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kecamatan"
+          },
+          "kota": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kota"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "nomor": {
+            "title": "Nomor",
+            "type": "string"
+          },
+          "simulasi": {
+            "title": "Simulasi",
+            "type": "boolean"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tingkat": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tingkat"
+          }
+        },
+        "required": [
+          "nomor",
+          "lat",
+          "lon",
+          "status",
+          "tingkat",
+          "kota",
+          "kecamatan",
+          "jumlah_dukungan",
+          "simulasi"
+        ],
+        "title": "TitikPetaKeluaran",
+        "type": "object"
+      },
+      "TokenMasukan": {
+        "properties": {
+          "token": {
+            "maxLength": 200,
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "title": "TokenMasukan",
+        "type": "object"
+      },
+      "TolakMasukan": {
+        "properties": {
+          "alasan": {
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Alasan",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "baik | bukan_jalan (untuk data latih)",
+            "title": "Label"
+          }
+        },
+        "required": [
+          "alasan"
+        ],
+        "title": "TolakMasukan",
+        "type": "object"
+      },
+      "UbahInstansiMasukan": {
+        "properties": {
+          "kanal_nama": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kanal Nama"
+          },
+          "kanal_url": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "wajib http:// atau https://",
+            "title": "Kanal Url"
+          }
+        },
+        "title": "UbahInstansiMasukan",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "VerifikasiMasukan": {
+        "properties": {
+          "tingkat": {
+            "description": "kurang_baik | rusak",
+            "title": "Tingkat",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tingkat"
+        ],
+        "title": "VerifikasiMasukan",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Lapor jalan rusak di DKI Jakarta. Kontrak terkunci: app/kontrak/openapi.json.",
+    "title": "JalanKu API"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/admin/ai/ekspor": {
+      "get": {
+        "operationId": "ekspor_api_admin_ai_ekspor_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "FR-AI-03 ekspor foto berlabel (zip)",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/admin/ai/metrik": {
+      "get": {
+        "operationId": "metrik_api_admin_ai_metrik_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "hari",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "title": "Hari",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetrikAIKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-AI-03 kinerja AI",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/admin/antrean": {
+      "get": {
+        "operationId": "antrean_api_admin_antrean_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ItemAntreanKeluaran"
+                  },
+                  "title": "Response Antrean Api Admin Antrean Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "FR-MOD-01 antrean (banding di atas)",
+        "tags": [
+          "moderasi"
+        ]
+      }
+    },
+    "/api/admin/instansi/{instansi_id}": {
+      "patch": {
+        "operationId": "ubah_instansi_api_admin_instansi__instansi_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instansi_id",
+            "required": true,
+            "schema": {
+              "title": "Instansi Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UbahInstansiMasukan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstansiKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-WIL-03 ubah kanal",
+        "tags": [
+          "wilayah"
+        ]
+      }
+    },
+    "/api/admin/laporan/{nomor}/gabung": {
+      "post": {
+        "operationId": "gabung_api_admin_laporan__nomor__gabung_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nomor",
+            "required": true,
+            "schema": {
+              "title": "Nomor",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GabungMasukan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AksiKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-MOD-01 gabung",
+        "tags": [
+          "moderasi"
+        ]
+      }
+    },
+    "/api/admin/laporan/{nomor}/paket": {
+      "get": {
+        "operationId": "paket_api_admin_laporan__nomor__paket_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nomor",
+            "required": true,
+            "schema": {
+              "title": "Nomor",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaketKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-MOD-04 paket penerusan",
+        "tags": [
+          "moderasi"
+        ]
+      }
+    },
+    "/api/admin/laporan/{nomor}/tingkat": {
+      "post": {
+        "operationId": "koreksi_api_admin_laporan__nomor__tingkat_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nomor",
+            "required": true,
+            "schema": {
+              "title": "Nomor",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KoreksiMasukan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AksiKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-MOD-03 koreksi tingkat",
+        "tags": [
+          "moderasi"
+        ]
+      }
+    },
+    "/api/admin/laporan/{nomor}/tolak": {
+      "post": {
+        "operationId": "tolak_api_admin_laporan__nomor__tolak_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nomor",
+            "required": true,
+            "schema": {
+              "title": "Nomor",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TolakMasukan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AksiKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-MOD-01 tolak",
+        "tags": [
+          "moderasi"
+        ]
+      }
+    },
+    "/api/admin/laporan/{nomor}/verifikasi": {
+      "post": {
+        "operationId": "verifikasi_api_admin_laporan__nomor__verifikasi_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nomor",
+            "required": true,
+            "schema": {
+              "title": "Nomor",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifikasiMasukan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AksiKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-MOD-01 verifikasi",
+        "tags": [
+          "moderasi"
+        ]
+      }
+    },
+    "/api/ai/info": {
+      "get": {
+        "operationId": "info_api_ai_info_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InfoModelKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Status & threshold model",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/ai/periksa": {
+      "post": {
+        "operationId": "periksa_api_ai_periksa_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_periksa_api_ai_periksa_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HasilFotoKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-AI-01 pratinjau satu foto (tidak disimpan)",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/akun/daftar": {
+      "post": {
+        "operationId": "daftar_api_akun_daftar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DaftarMasukan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pesan"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-AKN-02 daftar",
+        "tags": [
+          "akun"
+        ]
+      }
+    },
+    "/api/akun/keluar": {
+      "post": {
+        "operationId": "keluar_api_akun_keluar_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pesan"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Akhiri sesi",
+        "tags": [
+          "akun"
+        ]
+      }
+    },
+    "/api/akun/kirim-ulang": {
+      "post": {
+        "operationId": "kirim_ulang_api_akun_kirim_ulang_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailMasukan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pesan"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Kirim ulang email verifikasi",
+        "tags": [
+          "akun"
+        ]
+      }
+    },
+    "/api/akun/masuk": {
+      "post": {
+        "operationId": "masuk_api_akun_masuk_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MasukMasukan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PenggunaKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-AKN-02 masuk dengan email + password",
+        "tags": [
+          "akun"
+        ]
+      }
+    },
+    "/api/akun/saya": {
+      "delete": {
+        "operationId": "hapus_akun_api_akun_saya_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pesan"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "FR-AKN-04 hapus akun",
+        "tags": [
+          "akun"
+        ]
+      },
+      "get": {
+        "operationId": "saya_api_akun_saya_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/PenggunaKeluaran"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Saya Api Akun Saya Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Pengguna yang sedang masuk (null bila belum)",
+        "tags": [
+          "akun"
+        ]
+      }
+    },
+    "/api/akun/verifikasi": {
+      "post": {
+        "operationId": "verifikasi_api_akun_verifikasi_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenMasukan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PenggunaKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-AKN-02 verifikasi email",
+        "tags": [
+          "akun"
+        ]
+      }
+    },
+    "/api/foto/{foto_id}": {
+      "get": {
+        "operationId": "foto_api_foto__foto_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "foto_id",
+            "required": true,
+            "schema": {
+              "title": "Foto Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Berkas foto (tanpa EXIF) sesuai visibilitas",
+        "tags": [
+          "laporan"
+        ]
+      }
+    },
+    "/api/instansi": {
+      "get": {
+        "operationId": "instansi_api_instansi_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/InstansiKeluaran"
+                  },
+                  "title": "Response Instansi Api Instansi Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Daftar instansi & kanal resmi",
+        "tags": [
+          "wilayah"
+        ]
+      }
+    },
+    "/api/kesehatan": {
+      "get": {
+        "operationId": "kesehatan_api_kesehatan_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Kesehatan Api Kesehatan Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Cek hidup (untuk uptime monitor)",
+        "tags": [
+          "sistem"
+        ]
+      }
+    },
+    "/api/laporan": {
+      "post": {
+        "operationId": "kirim_laporan_api_laporan_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_kirim_laporan_api_laporan_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HasilKirimKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-PEL-01..05 kirim laporan; 409 bila ada duplikat dan abaikan_duplikat=false",
+        "tags": [
+          "pelaporan"
+        ]
+      }
+    },
+    "/api/laporan/{nomor}": {
+      "get": {
+        "operationId": "detail_api_laporan__nomor__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nomor",
+            "required": true,
+            "schema": {
+              "title": "Nomor",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetailLaporanKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-LAP-05 detail + timeline",
+        "tags": [
+          "laporan"
+        ]
+      }
+    },
+    "/api/laporan/{nomor}/banding": {
+      "post": {
+        "operationId": "banding_api_laporan__nomor__banding_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nomor",
+            "required": true,
+            "schema": {
+              "title": "Nomor",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AksiKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-MOD-02 minta peninjauan (sekali)",
+        "tags": [
+          "moderasi"
+        ]
+      }
+    },
+    "/api/laporan/{nomor}/dukung": {
+      "post": {
+        "operationId": "dukung_api_laporan__nomor__dukung_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nomor",
+            "required": true,
+            "schema": {
+              "title": "Nomor",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DukunganKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-PEL-06 dukung laporan",
+        "tags": [
+          "pelaporan"
+        ]
+      }
+    },
+    "/api/laporan/{nomor}/jejak": {
+      "get": {
+        "operationId": "jejak_api_laporan__nomor__jejak_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nomor",
+            "required": true,
+            "schema": {
+              "title": "Nomor",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JejakKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "US-32 jejak audit anti-ubah (rantai hash timeline)",
+        "tags": [
+          "laporan"
+        ]
+      }
+    },
+    "/api/lokasi": {
+      "post": {
+        "operationId": "pratinjau_lokasi_api_lokasi_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LokasiMasukan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PratinjauLokasiKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-WIL-01/02 + FR-PEL-05 pratinjau lokasi",
+        "tags": [
+          "pelaporan"
+        ]
+      }
+    },
+    "/api/notifikasi": {
+      "get": {
+        "operationId": "daftar_api_notifikasi_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/KabarKeluaran"
+                  },
+                  "title": "Response Daftar Api Notifikasi Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "FR-NTF-01 daftar kabar",
+        "tags": [
+          "notifikasi"
+        ]
+      }
+    },
+    "/api/notifikasi/pengaturan": {
+      "put": {
+        "operationId": "pengaturan_notifikasi_api_notifikasi_pengaturan_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PengaturanNotifikasi"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PengaturanNotifikasi"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Nyalakan/matikan notifikasi",
+        "tags": [
+          "notifikasi"
+        ]
+      }
+    },
+    "/api/notifikasi/{kabar_id}/dibaca": {
+      "post": {
+        "operationId": "dibaca_api_notifikasi__kabar_id__dibaca_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "kabar_id",
+            "required": true,
+            "schema": {
+              "title": "Kabar Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KabarKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Tandai sudah dibaca",
+        "tags": [
+          "notifikasi"
+        ]
+      }
+    },
+    "/api/peta": {
+      "get": {
+        "operationId": "data_peta_api_peta_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "mode",
+            "required": false,
+            "schema": {
+              "default": "aktif",
+              "enum": [
+                "aktif",
+                "riwayat"
+              ],
+              "title": "Mode",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "kota",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kota"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tingkat",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tingkat"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TitikPetaKeluaran"
+                  },
+                  "title": "Response Data Peta Api Peta Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-PETA-01/02 data bubble",
+        "tags": [
+          "peta"
+        ]
+      }
+    },
+    "/api/petugas/laporan": {
+      "get": {
+        "operationId": "daftar_api_petugas_laporan_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "urut",
+            "required": false,
+            "schema": {
+              "default": "waktu",
+              "title": "Urut",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ItemPetugasKeluaran"
+                  },
+                  "title": "Response Daftar Api Petugas Laporan Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-TGN-01/03 laporan wilayahku",
+        "tags": [
+          "penanganan"
+        ]
+      }
+    },
+    "/api/petugas/laporan/{nomor}/status": {
+      "post": {
+        "operationId": "ubah_status_api_petugas_laporan__nomor__status_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nomor",
+            "required": true,
+            "schema": {
+              "title": "Nomor",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_ubah_status_api_petugas_laporan__nomor__status_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusPetugasKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-TGN-02 ubah status",
+        "tags": [
+          "penanganan"
+        ]
+      }
+    },
+    "/api/saya/laporan": {
+      "get": {
+        "operationId": "laporan_saya_api_saya_laporan_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LaporanSayaKeluaran"
+                  },
+                  "title": "Response Laporan Saya Api Saya Laporan Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "FR-PEL-07 laporan saya",
+        "tags": [
+          "pelaporan"
+        ]
+      }
+    },
+    "/api/statistik": {
+      "get": {
+        "operationId": "statistik_api_statistik_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "hari",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "title": "Hari",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatistikKeluaran"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-STAT-01 statistik per Sudin",
+        "tags": [
+          "statistik"
+        ]
+      }
+    },
+    "/api/statistik/kejadian": {
+      "post": {
+        "operationId": "catat_api_statistik_kejadian_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KejadianMasukan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "FR-STAT-02 catat kejadian anonim",
+        "tags": [
+          "statistik"
+        ]
+      }
+    },
+    "/api/wilayah": {
+      "get": {
+        "operationId": "wilayah_api_wilayah_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Wilayah Api Wilayah Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Batas kecamatan (GeoJSON) untuk peta",
+        "tags": [
+          "wilayah"
+        ]
+      }
+    }
+  }
+}
