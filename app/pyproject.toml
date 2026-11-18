@@ -16,10 +16,6 @@ classifiers = [
   "Private :: Do Not Upload",
 ]
 
-[project.urls]
-Repository = "https://github.com/nichodarren/jalanku"
-Issues = "https://github.com/nichodarren/jalanku/issues"
-Changelog = "https://github.com/nichodarren/jalanku/blob/main/CHANGELOG.md"
 dependencies = [
   "fastapi>=0.115,<1",
   "uvicorn[standard]>=0.32,<1",
@@ -30,6 +26,11 @@ dependencies = [
   "onnxruntime>=1.18,<2",    # backbone EfficientNet-B0 (ai)
   "argon2-cffi>=23,<26",     # hash password (akun)
 ]
+
+[project.urls]
+Repository = "https://github.com/nichodarren/jalanku"
+Issues = "https://github.com/nichodarren/jalanku/issues"
+Changelog = "https://github.com/nichodarren/jalanku/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [
