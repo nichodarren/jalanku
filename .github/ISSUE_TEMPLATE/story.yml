@@ -1,0 +1,34 @@
+name: User story / item teknis
+description: Satu user story atau item teknis (1 story = 1 issue = 1 kartu board)
+title: "US-NN: <ringkasan>"
+labels: ["jenis:story"]
+body:
+  - type: input
+    id: id
+    attributes: { label: ID story, placeholder: "US-15" }
+    validations: { required: true }
+  - type: dropdown
+    id: modul
+    attributes:
+      label: Modul
+      options: [core, akun, wilayah, laporan, ai, pelaporan, moderasi, penanganan, peta, statistik, notifikasi, devops, dokumen]
+    validations: { required: true }
+  - type: textarea
+    id: card
+    attributes: { label: Card, description: "Sebagai ..., saya ingin ..., supaya ..." }
+    validations: { required: true }
+  - type: textarea
+    id: kriteria
+    attributes: { label: Acceptance criteria (Given/When/Then), description: Setiap skenario wajib jadi test otomatis }
+    validations: { required: true }
+  - type: textarea
+    id: kontrak
+    attributes: { label: Kontrak yang dipakai / ditambah, description: "Endpoint, fungsi publik modul lain, kejadian" }
+  - type: checkboxes
+    id: dor
+    attributes:
+      label: Definition of Ready
+      options:
+        - label: Diestimasi (story point) dan ≤ 8 SP
+        - label: Modul pemilik & modul terdampak jelas
+        - label: Bisa dikerjakan dengan stub modul lain (tidak menunggu)

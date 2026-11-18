@@ -1,0 +1,37 @@
+name: Change request (CR)
+description: Mengubah sesuatu yang DIKUNCI (kontrak API, antarmuka modul, skema tabel, scope)
+title: "CR: <ringkasan>"
+labels: ["jenis:cr"]
+body:
+  - type: markdown
+    attributes:
+      value: "Diputuskan CCB (Product Owner + tech lead + pemilik modul terdampak) dengan approve di issue ini. Setelah disetujui, judul diberi nomor CR-NN dan PR implementasinya merujuk nomor itu."
+  - type: textarea
+    id: apa
+    attributes: { label: Apa yang ingin diubah }
+    validations: { required: true }
+  - type: textarea
+    id: alasan
+    attributes: { label: Alasan (bukti, umpan balik dosen/pengguna, temuan teknis) }
+    validations: { required: true }
+  - type: checkboxes
+    id: item
+    attributes:
+      label: Configuration item terdampak
+      options:
+        - label: Scope / requirement (fitur Must, aturan bisnis, istilah)
+        - label: Desain / ADR
+        - label: Kontrak API (openapi.json)
+        - label: Antarmuka publik modul (modul.json)
+        - label: Skema database (migrasi baru)
+        - label: Dependency (pyproject / lock)
+  - type: textarea
+    id: dampak
+    attributes: { label: Dampak (modul & pemilik, story, test, perkiraan jam, jadwal) }
+    validations: { required: true }
+  - type: dropdown
+    id: sifat
+    attributes:
+      label: Sifat perubahan kontrak
+      options: [Tidak menyentuh kontrak, Backward compatible (menambah), Memecah (hapus/ganti nama/ubah tipe)]
+    validations: { required: true }

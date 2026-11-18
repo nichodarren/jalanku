@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Pertanyaan / diskusi tim
+    url: https://github.com/nichodarren/jalanku/blob/main/README.id.md
+    about: Baca README.id.md dan CONTRIBUTING.md dulu; pertanyaan teknis diskusikan di grup tim atau di PR terkait, bukan sebagai issue.

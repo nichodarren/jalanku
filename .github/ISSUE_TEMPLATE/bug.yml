@@ -1,0 +1,26 @@
+name: Bug
+description: Perilaku yang tidak sesuai requirement atau test
+title: "bug(<modul>): <ringkasan>"
+labels: ["jenis:bug"]
+body:
+  - type: input
+    id: modul
+    attributes: { label: Modul, placeholder: "peta" }
+    validations: { required: true }
+  - type: textarea
+    id: langkah
+    attributes: { label: Langkah mereproduksi, placeholder: "1. Masuk cepat sebagai admin\n2. Buka #/admin\n3. ..." }
+    validations: { required: true }
+  - type: textarea
+    id: harapan
+    attributes: { label: Yang diharapkan vs yang terjadi }
+    validations: { required: true }
+  - type: dropdown
+    id: keparahan
+    attributes:
+      label: Keparahan (Sesi 19)
+      options: [Kritis - data hilang/keamanan, Tinggi - fitur Must tidak jalan, Sedang - ada jalan lain, Rendah - tampilan]
+    validations: { required: true }
+  - type: textarea
+    id: bukti
+    attributes: { label: Bukti (log, tangkapan layar, versi browser) }

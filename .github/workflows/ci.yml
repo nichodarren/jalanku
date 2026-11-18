@@ -1,0 +1,63 @@
+# CI: setiap PR dan push ke main. Semua langkah harus hijau sebelum merge (DoD).
+# Pemilik: DevOps (M4) + M1.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  uji:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: app/requirements.lock
+
+      - name: Pasang dependency (versi persis dari lock)
+        run: |
+          pip install -r requirements.lock
+          pip install -e . --no-deps
+
+      - name: Lint & format
+        run: |
+          ruff check .
+          ruff format --check .
+
+      - name: Arsitektur (batas modul + kontrak terkunci)
+        run: python -m pytest tests/arsitektur -q
+
+      - name: Semua test + coverage (minimal 80%)
+        run: python -m pytest -q --cov=jalanku --cov-report=term-missing --cov-report=xml --cov-fail-under=80
+
+      - name: Audit keamanan dependency
+        run: |
+          pip install pip-audit
+          pip-audit -r requirements.lock --progress-spinner off
+
+      - name: Sintaks JavaScript frontend
+        run: |
+          for f in $(find jalanku/web -name '*.js' -not -path '*/vendor/*'); do node --check "$f"; done
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: app/coverage.xml
+          retention-days: 14

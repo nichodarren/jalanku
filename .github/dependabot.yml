@@ -1,0 +1,26 @@
+# Dependabot: weekly update PRs for Python dependencies and GitHub Actions.
+# Python updates must also refresh app/requirements.lock (one-version rule) and the
+# contract snapshot if the OpenAPI output changes — reviewed by M1 + DevOps.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /app
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels: ["dependencies"]
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      python-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels: ["dependencies", "ci"]
+    commit-message:
+      prefix: "ci"

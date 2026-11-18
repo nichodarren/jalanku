@@ -1,0 +1,55 @@
+# Pemilik kode: GitHub otomatis meminta review pemilik untuk setiap PR yang menyentuh path-nya.
+# Aturan yang lebih BAWAH menimpa yang di atas. Komentar hanya boleh di awal baris.
+#
+# Pemetaan M1–M6 → akun GitHub: diisi setelah anggota memilih slot.
+# Setelah slot dipilih: ganti @nichodarren di setiap blok "Mx" dengan akun anggota Mx
+# (blok kunci: tambahkan juga akun Product Owner / DevOps).
+# Mengubah file ini = PR yang di-approve Scrum Master + tech lead.
+
+# Bawaan: tech lead (M1)
+*                                         @nichodarren
+
+# Kunci: CCB (Product Owner + tech lead); dependency & CI: + DevOps
+/app/kontrak/                             @nichodarren
+/app/pyproject.toml                       @nichodarren
+/app/requirements.lock                    @nichodarren
+/.github/                                 @nichodarren
+
+# M1: core, perakit, frontend bersama, laporan, notifikasi
+/app/jalanku/core/                        @nichodarren
+/app/jalanku/main.py                      @nichodarren
+/app/jalanku/web/app.js                   @nichodarren
+/app/jalanku/web/shared/                  @nichodarren
+/app/jalanku/modules/laporan/             @nichodarren
+/app/jalanku/web/modules/laporan/         @nichodarren
+/app/jalanku/modules/notifikasi/          @nichodarren
+/app/jalanku/web/modules/notifikasi/      @nichodarren
+
+# M2: akun, wilayah
+/app/jalanku/modules/akun/                @nichodarren
+/app/jalanku/web/modules/akun/            @nichodarren
+/app/jalanku/modules/wilayah/             @nichodarren
+/app/jalanku/web/modules/wilayah/         @nichodarren
+
+# M3: pelaporan
+/app/jalanku/modules/pelaporan/           @nichodarren
+/app/jalanku/web/modules/pelaporan/       @nichodarren
+
+# M4: ai, notebook ML
+/app/jalanku/modules/ai/                  @nichodarren
+/app/jalanku/web/modules/ai/              @nichodarren
+/app/ml/                                  @nichodarren
+
+# M5: moderasi, statistik, test penerimaan & sistem (QA lead)
+/app/jalanku/modules/moderasi/            @nichodarren
+/app/jalanku/web/modules/moderasi/        @nichodarren
+/app/jalanku/modules/statistik/           @nichodarren
+/app/jalanku/web/modules/statistik/       @nichodarren
+/app/tests/penerimaan/                    @nichodarren
+/app/tests/sistem/                        @nichodarren
+
+# M6: peta, penanganan
+/app/jalanku/modules/peta/                @nichodarren
+/app/jalanku/web/modules/peta/            @nichodarren
+/app/jalanku/modules/penanganan/          @nichodarren
+/app/jalanku/web/modules/penanganan/      @nichodarren
