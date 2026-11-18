@@ -1,0 +1,18 @@
+# Akhir baris seragam (LF) di repo untuk semua anggota (Windows/macOS/Linux)
+* text=auto eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Biner
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.pdf binary
+*.onnx binary
+*.npy binary
+
+# Snapshot kontrak: tampil sebagai diff biasa supaya mudah di-review
+app/kontrak/*.json linguist-generated=false
+# Pustaka pihak ketiga tidak dihitung statistik bahasa
+app/jalanku/web/vendor/** linguist-vendored

@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+build/
+dist/
+
+# Data lokal & rahasia (JANGAN di-commit)
+app/var/
+*.db
+*.sqlite3
+*.db-wal
+*.db-shm
+.env
+.env.*
+!.env.example
+
+# Dataset & artefak ML besar (simpan di Google Drive tim, lihat app/ml/README.md)
+app/ml/data/
+*.zip
+*.pth
+*.ckpt
+
+# Editor & OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# File konteks asisten AI pribadi (tidak masuk repo; lihat CONTRIBUTING.md)
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+.claude/
+.cursor/
+.cursorrules
+.github/copilot-instructions.md
