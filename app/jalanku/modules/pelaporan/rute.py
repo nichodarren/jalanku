@@ -7,11 +7,17 @@ STUB: semua endpoint mengembalikan 501. Orkestrasi yang diharapkan untuk POST /a
 
 from __future__ import annotations
 
+from dataclasses import asdict
+
 from fastapi import APIRouter, Depends, File, Form, UploadFile, status
+from fastapi.concurrency import run_in_threadpool
+from fastapi.responses import JSONResponse
 
 from jalanku.core import BelumDibuat
 from jalanku.modules.akun import Pengguna, wajib_masuk, wajib_terverifikasi
 
+from .layanan import MAKS_BYTE_FOTO, DuplikatDitemukan
+from .layanan import kirim_laporan as kirim
 from .skema import DukunganKeluaran, HasilKirimKeluaran, LaporanSayaKeluaran, LokasiMasukan, PratinjauLokasiKeluaran
 
 router = APIRouter(tags=["pelaporan"])
@@ -38,7 +44,38 @@ async def kirim_laporan(
     abaikan_duplikat: bool = Form(False),
     pengguna: Pengguna = Depends(wajib_terverifikasi),
 ):
-    raise BelumDibuat("US-03", "M3")
+    # Baca satu byte lebih dari batas supaya foto > 10 MB terdeteksi tanpa memuat seluruh berkasnya.
+    data = [await f.read(MAKS_BYTE_FOTO + 1) for f in foto]
+    try:
+        hasil = await run_in_threadpool(
+            kirim,
+            pengguna,
+            data,
+            lat,
+            lon,
+            sumber_lokasi,
+            akurasi_gps,
+            keterangan,
+            abaikan_duplikat,
+        )
+    except DuplikatDitemukan as d:
+        return JSONResponse(
+            {
+                "detail": "Kerusakan ini mungkin sudah dilaporkan. Dukung laporan yang sudah ada?",
+                "duplikat": [asdict(k) for k in d.kandidat],
+            },
+            status_code=status.HTTP_409_CONFLICT,
+        )
+    lap = hasil.laporan
+    return HasilKirimKeluaran(
+        nomor=lap.nomor,
+        status=lap.status,
+        tingkat=lap.tingkat,
+        instansi_id=hasil.instansi.id,
+        instansi_nama=hasil.instansi.nama,
+        url_status=f"/#/laporan/{lap.nomor}",
+        pesan=hasil.pesan,
+    )
 
 
 @router.post("/api/laporan/{nomor}/dukung", response_model=DukunganKeluaran, summary="FR-PEL-06 dukung laporan")
