@@ -32,8 +32,8 @@
 /app/jalanku/web/modules/wilayah/         @nichodarren
 
 # M3: pelaporan
-/app/jalanku/modules/pelaporan/           @nichodarren
-/app/jalanku/web/modules/pelaporan/       @nichodarren
+/app/jalanku/modules/pelaporan/           @ivanwilliaml
+/app/jalanku/web/modules/pelaporan/       @ivanwilliaml
 
 # M4: ai, notebook ML
 /app/jalanku/modules/ai/                  @nichodarren
