@@ -52,7 +52,7 @@ def test_masuk_dev_dan_sesi(buat_klien):
 def test_peran_dicek_di_server(buat_klien, klien):
     assert klien.get("/api/admin/antrean").status_code == 401
     assert buat_klien("pelapor").get("/api/admin/antrean").status_code == 403
-    assert buat_klien("admin").get("/api/admin/antrean").status_code == 501  # lolos otorisasi, fitur belum dibuat
+    assert buat_klien("admin").get("/api/admin/antrean").status_code in (200, 501)
 
 
 def test_masuk_dev_tidak_ada_di_produksi(monkeypatch):
