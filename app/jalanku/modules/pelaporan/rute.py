@@ -18,14 +18,38 @@ from jalanku.modules.akun import Pengguna, wajib_masuk, wajib_terverifikasi
 
 from .layanan import MAKS_BYTE_FOTO, DuplikatDitemukan
 from .layanan import kirim_laporan as kirim
-from .skema import DukunganKeluaran, HasilKirimKeluaran, LaporanSayaKeluaran, LokasiMasukan, PratinjauLokasiKeluaran
+from .layanan import pratinjau_lokasi as pratinjau
+from .skema import (
+    DukunganKeluaran,
+    DuplikatKeluaran,
+    HasilKirimKeluaran,
+    InstansiRingkas,
+    KanalLuar,
+    LaporanSayaKeluaran,
+    LokasiMasukan,
+    PratinjauLokasiKeluaran,
+)
 
 router = APIRouter(tags=["pelaporan"])
 
 
 @router.post("/api/lokasi", response_model=PratinjauLokasiKeluaran, summary="FR-WIL-01/02 + FR-PEL-05 pratinjau lokasi")
 def pratinjau_lokasi(masukan: LokasiMasukan):
-    raise BelumDibuat("US-07 / US-09", "M3 (memakai modul wilayah M2)")
+    hasil = pratinjau(masukan.lat, masukan.lon, masukan.akurasi_gps)
+    inst = hasil.wilayah.instansi
+    return PratinjauLokasiKeluaran(
+        di_dalam=hasil.wilayah.di_dalam,
+        kota=hasil.wilayah.kota,
+        kecamatan=hasil.wilayah.kecamatan,
+        instansi=InstansiRingkas(
+            id=inst.id, nama_pendek=inst.nama_pendek, kanal_nama=inst.kanal_nama, kanal_url=inst.kanal_url
+        )
+        if inst
+        else None,
+        perlu_konfirmasi_pin=hasil.perlu_konfirmasi_pin,
+        kanal_luar=KanalLuar(nama=hasil.kanal_luar[0], url=hasil.kanal_luar[1]) if hasil.kanal_luar else None,
+        duplikat=[DuplikatKeluaran(**asdict(k)) for k in hasil.duplikat],
+    )
 
 
 @router.post(
