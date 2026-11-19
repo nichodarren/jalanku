@@ -13,11 +13,11 @@ from fastapi import APIRouter, Depends, File, Form, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse
 
-from jalanku.core import BelumDibuat
 from jalanku.modules.akun import Pengguna, wajib_masuk, wajib_terverifikasi
 
 from .layanan import MAKS_BYTE_FOTO, DuplikatDitemukan, dukung_laporan
 from .layanan import kirim_laporan as kirim
+from .layanan import laporan_saya as saya
 from .layanan import pratinjau_lokasi as pratinjau
 from .skema import (
     DukunganKeluaran,
@@ -110,4 +110,16 @@ def dukung(nomor: str, pengguna: Pengguna = Depends(wajib_terverifikasi)):
 
 @router.get("/api/saya/laporan", response_model=list[LaporanSayaKeluaran], summary="FR-PEL-07 laporan saya")
 def laporan_saya(pengguna: Pengguna = Depends(wajib_masuk)):
-    raise BelumDibuat("US-11", "M3")
+    return [
+        LaporanSayaKeluaran(
+            nomor=i.laporan.nomor,
+            status=i.laporan.status,
+            tingkat=i.laporan.tingkat,
+            kota=i.laporan.kota,
+            kecamatan=i.laporan.kecamatan,
+            dibuat_pada=i.laporan.dibuat_pada,
+            foto_url=f"/api/foto/{i.foto_id}" if i.foto_id else None,
+            bisa_banding=i.bisa_banding,
+        )
+        for i in saya(pengguna)
+    ]
