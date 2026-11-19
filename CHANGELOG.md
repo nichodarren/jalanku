@@ -14,3 +14,7 @@ Each release PR moves entries from **Unreleased** into a new version section; ca
 - Build-free PWA shell with hash router, shared UI helpers, Leaflet base map, and per-module pages.
 - CI (lint, format, architecture, tests with coverage, dependency audit, JavaScript syntax), Dependabot, issue/PR templates, CODEOWNERS.
 - Community files: README (EN/ID), CONTRIBUTING, SECURITY, CODE_OF_CONDUCT.
+
+### Security
+- Photos of non-public reports (awaiting verification, rejected) are served with `Cache-Control: private, no-store`; photos of public reports with `public, max-age=86400` (BR-06, TS-02).
+- Report visibility (BR-06) is covered by a full status × viewer test matrix for details, photos and AI results; a report whose reporter account was deleted is visible only to Admin (TS-02).
