@@ -16,7 +16,7 @@ from fastapi.responses import JSONResponse
 from jalanku.core import BelumDibuat
 from jalanku.modules.akun import Pengguna, wajib_masuk, wajib_terverifikasi
 
-from .layanan import MAKS_BYTE_FOTO, DuplikatDitemukan
+from .layanan import MAKS_BYTE_FOTO, DuplikatDitemukan, dukung_laporan
 from .layanan import kirim_laporan as kirim
 from .layanan import pratinjau_lokasi as pratinjau
 from .skema import (
@@ -104,7 +104,8 @@ async def kirim_laporan(
 
 @router.post("/api/laporan/{nomor}/dukung", response_model=DukunganKeluaran, summary="FR-PEL-06 dukung laporan")
 def dukung(nomor: str, pengguna: Pengguna = Depends(wajib_terverifikasi)):
-    raise BelumDibuat("US-10", "M3")
+    hasil = dukung_laporan(pengguna, nomor)
+    return DukunganKeluaran(nomor=hasil.nomor, jumlah_dukungan=hasil.jumlah_dukungan, baru=hasil.baru)
 
 
 @router.get("/api/saya/laporan", response_model=list[LaporanSayaKeluaran], summary="FR-PEL-07 laporan saya")
