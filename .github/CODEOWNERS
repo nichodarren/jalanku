@@ -26,10 +26,10 @@
 /app/jalanku/web/modules/notifikasi/      @nichodarren
 
 # M2: akun, wilayah
-/app/jalanku/modules/akun/                @nichodarren
-/app/jalanku/web/modules/akun/            @nichodarren
-/app/jalanku/modules/wilayah/             @nichodarren
-/app/jalanku/web/modules/wilayah/         @nichodarren
+/app/jalanku/modules/akun/                @Neilson-Ch
+/app/jalanku/web/modules/akun/            @Neilson-Ch
+/app/jalanku/modules/wilayah/             @Neilson-Ch
+/app/jalanku/web/modules/wilayah/         @Neilson-Ch
 
 # M3: pelaporan
 /app/jalanku/modules/pelaporan/           @nichodarren
