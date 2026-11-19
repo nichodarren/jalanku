@@ -14,3 +14,6 @@ Each release PR moves entries from **Unreleased** into a new version section; ca
 - Build-free PWA shell with hash router, shared UI helpers, Leaflet base map, and per-module pages.
 - CI (lint, format, architecture, tests with coverage, dependency audit, JavaScript syntax), Dependabot, issue/PR templates, CODEOWNERS.
 - Community files: README (EN/ID), CONTRIBUTING, SECURITY, CODE_OF_CONDUCT.
+
+### Security
+- Report photos are validated by content (JPEG/PNG/WebP only, max 10 MB), re-encoded as JPEG ≤ 1 MB, and stripped of all EXIF metadata including GPS before storage (TS-02).
