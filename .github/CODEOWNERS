@@ -41,12 +41,12 @@
 /app/ml/                                  @nichodarren
 
 # M5: moderasi, statistik, test penerimaan & sistem (QA lead)
-/app/jalanku/modules/moderasi/            @nichodarren
-/app/jalanku/web/modules/moderasi/        @nichodarren
-/app/jalanku/modules/statistik/           @nichodarren
-/app/jalanku/web/modules/statistik/       @nichodarren
-/app/tests/penerimaan/                    @nichodarren
-/app/tests/sistem/                        @nichodarren
+/app/jalanku/modules/moderasi/            @ixircs
+/app/jalanku/web/modules/moderasi/        @ixircs
+/app/jalanku/modules/statistik/           @ixircs
+/app/jalanku/web/modules/statistik/       @ixircs
+/app/tests/penerimaan/                    @ixircs
+/app/tests/sistem/                        @ixircs
 
 # M6: peta, penanganan
 /app/jalanku/modules/peta/                @Yosua137
