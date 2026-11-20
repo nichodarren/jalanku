@@ -59,6 +59,10 @@ def test_galat_lain_tetap_terlihat(monkeypatch):
 
 
 def test_wilayah_siap_contoh_data_berjalan_seperti_biasa(capsys):
+    try:
+        wilayah.tentukan_wilayah(-6.1754, 106.8272)
+    except GalatDomain:
+        pytest.skip("data batas kecamatan tidak tersedia di lingkungan test ini (lihat wilayah/README.md)")
     assert main(["contoh-data", "--jumlah", "5"]) == 0
     assert "laporan SIMULASI dibuat" in capsys.readouterr().out
     assert _jumlah_akun() >= 2
