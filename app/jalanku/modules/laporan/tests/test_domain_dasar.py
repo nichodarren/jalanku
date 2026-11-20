@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from conftest import TITIK
+from conftest import TITIK, foto_bytes
 from jalanku.core import Konflik, langganan
 from jalanku.core.kejadian import terbitkan
 from jalanku.modules import laporan
@@ -24,7 +24,7 @@ def _baru(keputusan="terverifikasi", tingkat="rusak", titik="monas", pelapor_id=
         kota="Jakarta Pusat",
         kecamatan="Gambir",
         instansi_id="SUDIN_JP",
-        foto=[b"\xff\xd8 foto uji"],
+        foto=[foto_bytes()],
         keputusan_ai=keputusan,
         tingkat=tingkat if keputusan == "terverifikasi" else None,
         **lain,
@@ -110,7 +110,7 @@ def test_hasil_ai_foto_sesudah_tampil_publik(klien):
         lap.nomor,
         laporan.STATUS_SELESAI,
         laporan.PELAKU_PETUGAS,
-        foto_sesudah=b"\xff\xd8 foto sesudah",
+        foto_sesudah=foto_bytes(warna=(200, 200, 200)),
         hasil_ai_sesudah={"kelas": "baik", "keputusan": "terima", "alasan": "Jalan tampak sudah baik"},
     )
     foto = klien.get(f"/api/laporan/{lap.nomor}").json()["foto"]

@@ -18,3 +18,6 @@ Each release PR moves entries from **Unreleased** into a new version section; ca
 
 ### Changed
 - Report descriptions longer than 280 characters are now rejected instead of silently truncated (TS-02).
+
+### Security
+- Report photos are validated by content (JPEG/PNG/WebP only, max 10 MB), re-encoded as JPEG ≤ 1 MB, and stripped of all EXIF metadata including GPS before storage (TS-02).

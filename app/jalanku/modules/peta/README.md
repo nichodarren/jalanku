@@ -17,12 +17,14 @@ Hanya nama di `__all__` pada [`__init__.py`](__init__.py). Tanda tangan terkunci
 
 ## Status stub (baseline 19 Nov 2026)
 
-`GET /api/peta` 501. Frontend sudah menampilkan peta dasar Leaflet + atribusi. Cari `TODO(` di folder ini.
+`GET /api/peta` sudah bekerja (mode aktif & riwayat, filter kota/tingkat multi-nilai dipisah koma, tanpa identitas pelapor). Frontend masih peta dasar Leaflet + atribusi.
 
 ## Pekerjaan
 
-- [ ] US-15: endpoint data bubble (tanpa pelapor_id); frontend markercluster, warna per tingkat, ukuran ikut zoom, animasi pop yang menghormati prefers-reduced-motion
-- [ ] US-16: mode riwayat (status Selesai)
+- [x] US-15: endpoint data bubble `GET /api/peta` (tanpa pelapor_id); test di `tests/test_peta_api.py`
+- [ ] US-15: frontend markercluster, warna per tingkat, ukuran ikut zoom, animasi pop yang menghormati prefers-reduced-motion
+- [x] US-16 (backend): `mode=riwayat` mengembalikan status Selesai
+- [ ] US-16 (frontend): rute `#/riwayat`, warna hijau
 - [ ] Pakai `python -m jalanku contoh-data` (data SIMULASI) selama modul pelaporan belum selesai
 
 ## Cara kerja di modul ini
