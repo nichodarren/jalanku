@@ -6,13 +6,18 @@ berhenti dengan traceback karena GeoJSON batas kecamatan belum disiapkan.
 
 from __future__ import annotations
 
+import os
+import shutil
+
 import pytest
 
 from jalanku.__main__ import main
-from jalanku.core import GalatDomain, koneksi
+from jalanku.core import GalatDomain, koneksi, pengaturan
+from jalanku.core.config import FOLDER_APP
 from jalanku.modules import wilayah
 
 PETUNJUK = "python -m jalanku.modules.wilayah.data.setup_wilayah"
+BERKAS_WILAYAH = "wilayah-dki-jakarta.geojson"  # nama berkas hasil setup_wilayah (modul wilayah, #17)
 
 
 class _DataBelumAda(GalatDomain):  # tiruan galat 503 modul wilayah saat GeoJSON belum disiapkan
@@ -58,11 +63,31 @@ def test_galat_lain_tetap_terlihat(monkeypatch):
         main(["contoh-data"])
 
 
-def test_wilayah_siap_contoh_data_berjalan_seperti_biasa(capsys):
+def _siapkan_data_wilayah() -> None:
+    """Fixture bersama memakai folder data kosong per test. Bila GeoJSON wilayah sudah disiapkan di folder
+    data bawaan (``app/var``, mis. oleh langkah CI ``setup_wilayah``), salin ke folder data test ini."""
+    if not wilayah_siap():
+        sumber = FOLDER_APP / "var" / BERKAS_WILAYAH
+        if sumber.is_file():
+            shutil.copyfile(sumber, pengaturan().folder_data / BERKAS_WILAYAH)
+
+
+def wilayah_siap() -> bool:
     try:
         wilayah.tentukan_wilayah(-6.1754, 106.8272)
     except GalatDomain:
-        pytest.skip("data batas kecamatan tidak tersedia di lingkungan test ini (lihat wilayah/README.md)")
+        return False
+    return True
+
+
+def test_wilayah_siap_contoh_data_berjalan_seperti_biasa(capsys):
+    _siapkan_data_wilayah()
+    if not wilayah_siap():
+        # Di CI data wilayah wajib ada (langkah "Siapkan GeoJSON wilayah"), jadi test ini tidak boleh dilewati.
+        assert not os.environ.get("CI"), "Data wilayah tidak tersedia di CI; cek langkah setup_wilayah di workflow."
+        pytest.skip("Jalankan dulu: python -m jalanku.modules.wilayah.data.setup_wilayah")
     assert main(["contoh-data", "--jumlah", "5"]) == 0
     assert "laporan SIMULASI dibuat" in capsys.readouterr().out
     assert _jumlah_akun() >= 2
+    with koneksi() as kon:
+        assert kon.execute("SELECT COUNT(*) FROM laporan WHERE simulasi = 1").fetchone()[0] >= 1
