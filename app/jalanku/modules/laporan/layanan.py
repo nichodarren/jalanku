@@ -1,11 +1,10 @@
 """Domain laporan: penyimpanan, nomor, siklus status (BR-03), timeline, dukungan, visibilitas (BR-06).
 
-Status baseline 19 Nov 2026 — STUB yang sudah bekerja di DB. Sisa pekerjaan M1 (TS-02), dicari
-dengan ``TODO(TS-02)``:
-  1. Foto: validasi isi, buang EXIF, encode ulang JPEG ≤ 1 MB (FR-LAP-04, NFR-PRI-02, NFR-SEC-02).
-  2. Syarat transisi BR-03 di level domain (tingkat wajib, alasan wajib, induk aktif, banding sekali,
+Foto dibersihkan di ``_foto.py`` (validasi isi, buang EXIF, JPEG ≤ 1 MB). Sisa pekerjaan M1 (TS-02),
+dicari dengan ``TODO(TS-02)``:
+  1. Syarat transisi BR-03 di level domain (tingkat wajib, alasan wajib, induk aktif, banding sekali,
      foto sesudah wajib bila konfigurasi aktif).
-  3. Visibilitas foto untuk petugas & admin; test lengkap.
+  2. Visibilitas foto untuk petugas & admin; test lengkap.
 """
 
 from __future__ import annotations
@@ -27,6 +26,7 @@ from jalanku.core import (
 )
 from jalanku.modules.akun import PERAN_ADMIN, AkunDihapus, Pengguna
 
+from ._foto import bersihkan_foto
 from .tipe import (
     PELAKU_ADMIN,
     PELAKU_AI,
@@ -96,11 +96,10 @@ def _ke_laporan(b: sqlite3.Row) -> Laporan:
     return Laporan(**data)
 
 
-def _simpan_foto(kon: sqlite3.Connection, laporan_id: int, jenis: str, data: bytes, hasil_ai: dict | None) -> None:
-    # TODO(TS-02): validasi isi file (Pillow), buang EXIF, encode ulang JPEG ≤ 1 MB sebelum disimpan.
-    if not data:
-        raise TidakValid("Foto kosong.")
-    nama = simpan_berkas(data, ".jpg")
+def _simpan_foto(kon: sqlite3.Connection, laporan_id: int, jenis: str, bersih: bytes, hasil_ai: dict | None) -> None:
+    """``bersih`` = hasil ``bersihkan_foto``; dibersihkan sebelum transaksi supaya foto tidak valid
+    menggagalkan seluruh laporan sebelum ada berkas yang ditulis."""
+    nama = simpan_berkas(bersih, ".jpg")
     kon.execute(
         "INSERT INTO laporan_foto (laporan_id, jenis, berkas, ai_json, dibuat_pada) VALUES (?, ?, ?, ?, ?)",
         (laporan_id, jenis, nama, json.dumps(hasil_ai) if hasil_ai else None, sekarang()),
@@ -125,6 +124,7 @@ def buat_laporan(data: LaporanBaru) -> Laporan:
         raise TidakValid("Laporan butuh 1 sampai 3 foto.")
     if data.keputusan_ai == "terverifikasi" and data.tingkat not in URUTAN_TINGKAT:
         raise TidakValid("Keputusan terverifikasi wajib menyertakan tingkat.")
+    bersih = [bersihkan_foto(f) for f in data.foto]
     if data.keputusan_ai == "terverifikasi":
         status, diperiksa, pelaku, catatan = STATUS_BELUM, PELAKU_AI, PELAKU_AI, "Diverifikasi oleh AI JalanKu"
     elif data.keputusan_ai == "ditolak":
@@ -167,7 +167,7 @@ def buat_laporan(data: LaporanBaru) -> Laporan:
                 kini,
             ),
         )
-        for i, foto in enumerate(data.foto):
+        for i, foto in enumerate(bersih):
             _simpan_foto(kon, baru_id, "bukti", foto, data.hasil_ai[i] if i < len(data.hasil_ai) else None)
         _catat(kon, baru_id, None, status, pelaku, None, catatan)
     laporan = ambil_laporan(f"JK-{baru_id:05d}")
@@ -323,6 +323,7 @@ def ubah_status(
     #              induk aktif saat gabung, banding hanya sekali & hanya untuk penolakan AI,
     #              foto sesudah wajib bila pengaturan().wajib_foto_selesai).
     induk_id = ambil_laporan(induk_nomor).id if induk_nomor else None
+    sesudah_bersih = bersihkan_foto(foto_sesudah) if foto_sesudah is not None else None
     kini = sekarang()
     set_kolom = {"status": ke, "diubah_pada": kini}
     if ke == STATUS_BELUM and laporan.status == STATUS_MENUNGGU:
@@ -344,8 +345,8 @@ def ubah_status(
             f"UPDATE laporan SET {', '.join(f'{k} = ?' for k in set_kolom)} WHERE id = ?",  # noqa: S608
             (*set_kolom.values(), laporan.id),
         )
-        if foto_sesudah is not None:
-            _simpan_foto(kon, laporan.id, "sesudah", foto_sesudah, hasil_ai_sesudah)
+        if sesudah_bersih is not None:
+            _simpan_foto(kon, laporan.id, "sesudah", sesudah_bersih, hasil_ai_sesudah)
         _catat(kon, laporan.id, laporan.status, ke, pelaku, pengguna_id, catatan)
     terbitkan(StatusBerubah(laporan.id, laporan.nomor, laporan.status, ke, pelaku, laporan.pelapor_id))
     return ambil_laporan(nomor)
