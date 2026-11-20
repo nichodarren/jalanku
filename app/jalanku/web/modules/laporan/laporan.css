@@ -44,6 +44,8 @@
 .detail-timeline li.status-selesai::before { background: var(--warna-selesai); }
 .detail-timeline li.status-ditolak::before { background: var(--warna-rusak); }
 .detail-langkah { font-weight: 700; }
+.detail-jejak { margin: 0 0 12px; padding: 6px 10px; border-radius: 8px; border-left: 4px solid var(--warna-rusak); background: var(--warna-latar); font-size: 0.9rem; }
+.detail-jejak.utuh { border-left-color: var(--warna-selesai); color: var(--warna-selesai); font-weight: 600; }
 
 .detail-titik { stroke: var(--warna-kartu); stroke-width: 3; fill: var(--warna-rusak); fill-opacity: 1; }
 .detail-titik.status-selesai { fill: var(--warna-selesai); }

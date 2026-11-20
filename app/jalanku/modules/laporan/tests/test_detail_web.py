@@ -41,6 +41,7 @@ def test_memakai_kontrak_detail_dan_instansi():
     kode = _baca("index.js")
     assert "/api/laporan/${encodeURIComponent(" in kode  # nomor dari URL di-encode
     assert '"/api/instansi"' in kode
+    assert "/jejak`" in kode  # US-32: lencana keutuhan riwayat
     for field in (
         "foto",
         "timeline",

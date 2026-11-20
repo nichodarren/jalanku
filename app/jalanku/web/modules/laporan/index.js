@@ -138,11 +138,27 @@ function kartuInstansi(d, instansi) {
   };
 }
 
-function kartuTimeline(d) {
+/** US-32: lencana keutuhan riwayat (rantai hash). Diisi belakangan; disembunyikan bila jejak tidak tersedia. */
+async function isiLencanaJejak(wadah, nomor) {
+  let jejak;
+  try {
+    jejak = await api.get(`/api/laporan/${encodeURIComponent(nomor)}/jejak`);
+  } catch {
+    return; // mis. 501 sebelum US-32 aktif: tidak menampilkan apa pun
+  }
+  wadah.append(
+    jejak.utuh
+      ? el("p", { class: "detail-jejak utuh" }, "✓ Riwayat terverifikasi: tidak ada entri yang diubah sejak dicatat.")
+      : el("p", { class: "detail-jejak", role: "status" }, "Riwayat ini tidak bisa dibuktikan utuh. Hubungi Admin JalanKu."),
+  );
+}
+
+function kartuTimeline(d, jejak) {
   return el(
     "section",
     { class: "kartu" },
     el("h2", {}, "Riwayat status"),
+    jejak,
     el(
       "ol",
       { class: "detail-timeline" },
@@ -194,7 +210,9 @@ async function tampilDetail(wadah, param) {
   document.title = `${d.nomor} · JalanKu`;
   const instansi = await ambilInstansi(d.instansi_id);
   const { kartu, peta } = kartuInstansi(d, instansi);
-  wadah.append(kembali, kartuUtama(d), kartu, kartuTimeline(d));
+  const jejak = el("div", { "aria-live": "polite" });
+  wadah.append(kembali, kartuUtama(d), kartu, kartuTimeline(d, jejak));
+  isiLencanaJejak(jejak, d.nomor);
 
   const map = buatPeta(peta, { zoom: 17, pusat: [d.lat, d.lon] });
   window.L.circleMarker([d.lat, d.lon], { radius: 9, className: `detail-titik status-${d.status}` }).addTo(map);
