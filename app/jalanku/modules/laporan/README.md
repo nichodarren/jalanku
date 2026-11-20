@@ -17,13 +17,13 @@ Hanya nama di `__all__` pada [`__init__.py`](__init__.py). Tanda tangan terkunci
 
 ## Status stub (baseline 19 Nov 2026)
 
-Sudah bekerja di DB: buat, ambil, cari, transisi BR-03 per pelaku, timeline, dukungan, detail publik, berkas foto. Foto dibersihkan sebelum disimpan (`_foto.py`). Syarat transisi BR-03 lengkap (`_cek_syarat`; data kurang → 400, keadaan tidak memungkinkan → 409). Belum: visibilitas petugas. Cari `TODO(` di folder ini.
+Sudah bekerja di DB: buat, ambil, cari, transisi BR-03 per pelaku, timeline, dukungan, detail publik, berkas foto. TS-02 selesai: foto dibersihkan sebelum disimpan (`_foto.py`); syarat transisi BR-03 lengkap (`_cek_syarat`; data kurang → 400, keadaan tidak memungkinkan → 409); visibilitas BR-06 lengkap dengan test, foto laporan privat dikirim `Cache-Control: private, no-store`. Cari `TODO(` di folder ini untuk sisa pekerjaan.
 
 ## Pekerjaan
 
 - [x] TS-02: foto aman di `_foto.py` → validasi isi (Pillow), buang EXIF, encode ulang JPEG ≤ 1 MB (NFR-PRI-02, NFR-SEC-02)
 - [x] TS-02: syarat transisi di domain (`_cek_syarat`: tingkat wajib, alasan ≥ 5 karakter, induk aktif, banding sekali & hanya untuk penolakan AI, foto sesudah wajib) + keterangan ≤ 280 karakter ditolak bila lebih
-- [ ] TS-02: visibilitas untuk petugas; test lengkap BR-06
+- [x] TS-02: visibilitas BR-06 (`boleh_dilihat`, `boleh_lihat_hasil_ai`) + test matriks status × penonton; petugas tidak punya hak lihat tambahan (daftar tugas per wilayah = modul `penanganan`); header cache foto publik/privat
 - [ ] US-17: halaman detail `web/modules/laporan/` (foto sebelum/sesudah, timeline berlabel pelaku, penanda SIMULASI)
 
 - [ ] **US-32 jejak audit (Should, nilai kompetisi tinggi):** isi `TODO(US-32)` di `_catat` (kolom `hash` sudah ada di migrasi) dan endpoint `GET /api/laporan/{nomor}/jejak` (masih 501)

@@ -1,9 +1,8 @@
 """Domain laporan: penyimpanan, nomor, siklus status (BR-03), timeline, dukungan, visibilitas (BR-06).
 
-Foto dibersihkan di ``_foto.py`` (validasi isi, buang EXIF, JPEG ≤ 1 MB). Syarat transisi BR-03
-ditegakkan di ``_cek_syarat`` (siapa boleh apa ada di ``TRANSISI``). Sisa pekerjaan M1 (TS-02),
-dicari dengan ``TODO(TS-02)``:
-  1. Visibilitas foto untuk petugas & admin; test lengkap.
+TS-02 selesai: foto dibersihkan di ``_foto.py`` (validasi isi, buang EXIF, JPEG ≤ 1 MB); syarat transisi
+BR-03 ditegakkan di ``_cek_syarat`` (siapa boleh apa ada di ``TRANSISI``); visibilitas BR-06 di
+``boleh_dilihat`` dan ``boleh_lihat_hasil_ai``.
 """
 
 from __future__ import annotations
@@ -204,12 +203,31 @@ def _ambil_per_id(laporan_id: int) -> Laporan:
 
 
 def boleh_dilihat(laporan: Laporan, penonton: Pengguna | None) -> bool:
-    """BR-06. TODO(TS-02): aturan foto & petugas, test lengkap."""
+    """BR-06 (FR-LAP-03): berlaku untuk detail, timeline, dan berkas foto laporan.
+
+    - Status publik (belum/sedang dikerjakan, selesai, digabung): semua orang, termasuk pengunjung.
+    - Menunggu verifikasi & ditolak: hanya pelapornya dan Admin. Setelah akun pelapor dihapus
+      (``pelapor_id`` kosong), hanya Admin.
+    - Petugas tidak punya hak lihat tambahan; "laporan publik di wilayahnya" adalah aturan daftar
+      tugas di modul ``penanganan``, bukan aturan lihat detail.
+    Pemanggil yang menolak akses wajib menjawab 404 (bukan 403) agar keberadaan laporan tidak bocor.
+    """
     if laporan.status in STATUS_PUBLIK:
         return True
     if penonton is None:
         return False
-    return penonton.peran == PERAN_ADMIN or penonton.id == laporan.pelapor_id
+    if penonton.peran == PERAN_ADMIN:
+        return True
+    return laporan.pelapor_id is not None and penonton.id == laporan.pelapor_id
+
+
+def boleh_lihat_hasil_ai(laporan: Laporan, foto: Foto, penonton: Pengguna | None) -> bool:
+    """Hasil AI foto bukti hanya untuk pelapornya & Admin; hasil AI foto sesudah perbaikan publik (US-31)."""
+    if foto.jenis == "sesudah":
+        return True
+    if penonton is None:
+        return False
+    return penonton.peran == PERAN_ADMIN or (laporan.pelapor_id is not None and penonton.id == laporan.pelapor_id)
 
 
 def ambil_untuk_penonton(nomor: str, penonton: Pengguna | None) -> Laporan:
