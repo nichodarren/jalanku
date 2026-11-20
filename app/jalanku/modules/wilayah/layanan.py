@@ -1,20 +1,60 @@
-"""Penentuan wilayah & instansi (BR-01).
-
-STUB (baseline 19 Nov 2026): ``tentukan_wilayah`` memakai KOTAK KASAR Jakarta, dan semua titik
-di dalamnya dianggap Gambir / Jakarta Pusat / SUDIN_JP. Cukup untuk modul lain mengembangkan
-alurnya. M2 menggantinya dengan poligon 42 kecamatan GADM (TS-04, US-07) memakai shapely STRtree.
-Sumber data & script di jalanku-v0 branch trial/mvp-v2: app/scripts/siapkan_wilayah.py,
-app/jalanku/data/wilayah-dki-jakarta.geojson.
-"""
+"""Penentuan wilayah dan instansi (BR-01) dari batas kecamatan lokal TS-04."""
 
 from __future__ import annotations
 
-from jalanku.core import TidakDitemukan, koneksi
+import json
+from copy import deepcopy
+from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
 
-from .tipe import ID_DINAS, HasilWilayah, Instansi
+from shapely import STRtree
+from shapely.errors import ShapelyError
+from shapely.geometry import Point, shape
 
-# Kotak kasar DKI Jakarta daratan (lat min, lat maks, lon min, lon maks). STUB.
-_KOTAK_JAKARTA = (-6.375, -6.08, 106.685, 106.975)
+from jalanku.core import GalatDomain, TidakDitemukan, TidakValid, koneksi, pengaturan
+
+from .tipe import ID_DINAS, KOTA, HasilWilayah, Instansi
+
+
+class _DataTidakTersedia(GalatDomain):
+    kode_http = 503
+
+
+@dataclass(frozen=True)
+class _Indeks:
+    geojson: dict
+    nama: list[tuple[str, str]]
+    pohon: STRtree
+
+
+@lru_cache(maxsize=1)
+def _muat_indeks(jalur: Path, revisi: int) -> _Indeks:
+    """Gunakan ulang indeks sampai berkas di jalur itu diperbarui."""
+    data = json.loads(jalur.read_text(encoding="utf-8"))
+    if data["type"] != "FeatureCollection" or not data["features"]:
+        raise ValueError("FeatureCollection wilayah kosong atau tidak valid.")
+    nama = []
+    geometri = []
+    for fitur in data["features"]:
+        properti = fitur["properties"]
+        kota, kecamatan = properti["kota"], properti["kecamatan"]
+        batas = shape(fitur["geometry"])
+        if kota not in KOTA or not isinstance(kecamatan, str) or not kecamatan.strip():
+            raise ValueError("Identitas kecamatan tidak valid.")
+        if batas.geom_type not in {"Polygon", "MultiPolygon"} or batas.is_empty or not batas.is_valid:
+            raise ValueError("Poligon kecamatan tidak valid.")
+        nama.append((kota, kecamatan))
+        geometri.append(batas)
+    return _Indeks(data, nama, STRtree(geometri))
+
+
+def _indeks() -> _Indeks:
+    jalur = pengaturan().folder_data / "wilayah-dki-jakarta.geojson"
+    try:
+        return _muat_indeks(jalur, jalur.stat().st_mtime_ns)
+    except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, ShapelyError) as galat:
+        raise _DataTidakTersedia("Data batas kecamatan belum tersedia atau rusak.") from galat
 
 
 def _ke_instansi(b) -> Instansi:
@@ -41,10 +81,19 @@ def ambil_instansi(instansi_id: str) -> Instansi:
 
 
 def tentukan_wilayah(lat: float, lon: float) -> HasilWilayah:
-    lat_min, lat_maks, lon_min, lon_maks = _KOTAK_JAKARTA
-    if not (lat_min <= lat <= lat_maks and lon_min <= lon <= lon_maks):
+    """Cari kecamatan yang mencakup titik, termasuk tepi poligonnya."""
+    if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+        raise TidakValid("Koordinat di luar rentang yang diizinkan.")
+    indeks = _indeks()
+    cocok = indeks.pohon.query(Point(lon, lat), predicate="covered_by")
+    if len(cocok) == 0:
         return HasilWilayah(di_dalam=False, kota=None, kecamatan=None, instansi=None)
-    return HasilWilayah(di_dalam=True, kota="Jakarta Pusat", kecamatan="Gambir", instansi=ambil_instansi("SUDIN_JP"))
+    # Di batas bersama, pilih pasangan kota/kecamatan pertama secara alfabetis.
+    kota, kecamatan = min(indeks.nama[i] for i in cocok)
+    for instansi in daftar_instansi():
+        if instansi.kota == kota:
+            return HasilWilayah(True, kota, kecamatan, instansi)
+    raise _DataTidakTersedia("Sudin untuk kota ini belum tersedia.")
 
 
 def boleh_menangani(instansi_id: str, kota: str | None) -> bool:
@@ -58,16 +107,5 @@ def boleh_menangani(instansi_id: str, kota: str | None) -> bool:
 
 
 def batas_wilayah_geojson() -> dict:
-    """GeoJSON FeatureCollection kecamatan. STUB: satu kotak kasar."""
-    lat_min, lat_maks, lon_min, lon_maks = _KOTAK_JAKARTA
-    kotak = [[lon_min, lat_min], [lon_maks, lat_min], [lon_maks, lat_maks], [lon_min, lat_maks], [lon_min, lat_min]]
-    return {
-        "type": "FeatureCollection",
-        "features": [
-            {
-                "type": "Feature",
-                "properties": {"kota": "STUB", "kecamatan": "STUB (kotak kasar, bukan batas asli)"},
-                "geometry": {"type": "Polygon", "coordinates": [kotak]},
-            }
-        ],
-    }
+    """Kembalikan salinan batas kecamatan untuk peta."""
+    return deepcopy(_indeks().geojson)
