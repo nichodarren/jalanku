@@ -393,6 +393,8 @@ def ubah_status(
         )
         if sesudah_bersih is not None:
             _simpan_foto(kon, laporan.id, "sesudah", sesudah_bersih, hasil_ai_sesudah)
+        if ke == STATUS_DIGABUNG:
+            _pindahkan_dukungan(kon, laporan, induk_id)
         _catat(kon, laporan.id, laporan.status, ke, pelaku, pengguna_id, catatan)
     terbitkan(StatusBerubah(laporan.id, laporan.nomor, laporan.status, ke, pelaku, laporan.pelapor_id))
     return ambil_laporan(nomor)
@@ -423,6 +425,8 @@ def ubah_tingkat(nomor: str, tingkat: str, pengguna_id: int, alasan: str) -> Lap
 
 # --- Dukungan ----------------------------------------------------------------------------------
 
+_POTONG_ID = 500
+
 
 def tambah_dukungan(laporan_id: int, pengguna_id: int) -> bool:
     """True bila dukungan baru tercatat; False bila pengguna ini sudah pernah mendukung."""
@@ -440,6 +444,49 @@ def jumlah_dukungan(laporan_id: int) -> int:
         return kon.execute("SELECT COUNT(*) FROM laporan_dukungan WHERE laporan_id = ?", (laporan_id,)).fetchone()[0]
     finally:
         kon.close()
+
+
+def jumlah_dukungan_massal(laporan_ids: list[int]) -> dict[int, int]:
+    """Jumlah dukungan banyak laporan sekaligus (CR #23, mencegah N+1 di peta). Id tanpa dukungan → 0.
+
+    Satu query ``GROUP BY`` per potongan ``_POTONG_ID`` id, supaya tidak melewati batas variabel SQLite.
+    """
+    hasil = dict.fromkeys(laporan_ids, 0)
+    ids = list(hasil)
+    kon = koneksi()
+    try:
+        for awal in range(0, len(ids), _POTONG_ID):
+            bagian = ids[awal : awal + _POTONG_ID]
+            tanda = ", ".join("?" * len(bagian))
+            baris = kon.execute(
+                f"SELECT laporan_id, COUNT(*) FROM laporan_dukungan WHERE laporan_id IN ({tanda}) GROUP BY laporan_id",  # noqa: S608
+                bagian,
+            )
+            hasil.update({laporan_id: n for laporan_id, n in baris})
+    finally:
+        kon.close()
+    return hasil
+
+
+def _pindahkan_dukungan(kon: sqlite3.Connection, laporan: Laporan, induk_id: int) -> None:
+    """Saat ``laporan`` digabung ke induknya: pendukungnya dan pelapornya menjadi pendukung induk.
+
+    Dukungan yang sudah ada di induk tidak ditimpa (waktu lama tetap), dan pelapor induk tidak
+    pernah tercatat mendukung laporannya sendiri. Dipanggil di dalam transaksi ``ubah_status``.
+    """
+    kon.execute(
+        "INSERT OR IGNORE INTO laporan_dukungan (laporan_id, pengguna_id, waktu) "
+        "SELECT :induk, pengguna_id, waktu FROM laporan_dukungan "
+        "WHERE laporan_id = :anak AND pengguna_id IS NOT (SELECT pelapor_id FROM laporan WHERE id = :induk)",
+        {"induk": induk_id, "anak": laporan.id},
+    )
+    if laporan.pelapor_id is not None:
+        kon.execute(
+            "INSERT OR IGNORE INTO laporan_dukungan (laporan_id, pengguna_id, waktu) "
+            "SELECT :induk, :pelapor, :waktu WHERE :pelapor IS NOT (SELECT pelapor_id FROM laporan WHERE id = :induk)",
+            {"induk": induk_id, "pelapor": laporan.pelapor_id, "waktu": laporan.dibuat_pada},
+        )
+    kon.execute("DELETE FROM laporan_dukungan WHERE laporan_id = ?", (laporan.id,))
 
 
 def pendukung(laporan_id: int) -> list[int]:
