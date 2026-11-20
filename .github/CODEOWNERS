@@ -36,9 +36,9 @@
 /app/jalanku/web/modules/pelaporan/       @nichodarren
 
 # M4: ai, notebook ML
-/app/jalanku/modules/ai/                  @nichodarren
-/app/jalanku/web/modules/ai/              @nichodarren
-/app/ml/                                  @nichodarren
+/app/jalanku/modules/ai/                  @vinsonns24-lgtm
+/app/jalanku/web/modules/ai/              @vinsonns24-lgtm
+/app/ml/                                  @vinsonns24-lgtm
 
 # M5: moderasi, statistik, test penerimaan & sistem (QA lead)
 /app/jalanku/modules/moderasi/            @ixircs
