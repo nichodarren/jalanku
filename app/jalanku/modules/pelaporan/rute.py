@@ -1,8 +1,12 @@
 """Endpoint alur warga. Pemilik: M3.
 
-STUB: semua endpoint mengembalikan 501. Orkestrasi yang diharapkan untuk POST /api/laporan
-(UC-02): batasi 10/jam → wilayah.tentukan_wilayah → cek duplikat (laporan.cari_aktif_dekat)
-→ ai.periksa_foto per foto → ai.putuskan → laporan.buat_laporan(LaporanBaru(...)).
+Empat endpoint: ``POST /api/lokasi`` (US-04, US-09), ``POST /api/laporan`` (US-03),
+``POST /api/laporan/{nomor}/dukung`` (US-10), ``GET /api/saya/laporan`` (US-11). Berkas ini hanya
+menerjemahkan HTTP; logikanya ada di ``layanan.py``.
+
+Orkestrasi ``POST /api/laporan`` (UC-02): batasi 10/jam → validasi 1–3 foto → wilayah.tentukan_wilayah
+→ cek duplikat (laporan.cari_aktif_dekat, 25 m) → ai.periksa_foto per foto → ai.putuskan
+→ laporan.buat_laporan(LaporanBaru(...)).
 """
 
 from __future__ import annotations
