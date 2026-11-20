@@ -70,7 +70,9 @@ export function popupLaporan(lap) {
     el("p", { class: "popup-nomor" }, lap.nomor, lap.simulasi ? el("span", { class: "lencana-simulasi" }, "SIMULASI") : null),
     el("p", {}, el("span", { class: `lencana ${kelasWarna(lap)}` }, labelLaporan(lap))),
     el("p", { class: "redup" }, [lap.kecamatan ? `Kec. ${lap.kecamatan}` : null, lap.kota].filter(Boolean).join(", ")),
-    selesai ? null : el("p", { class: "redup" }, `${lap.jumlah_dukungan} warga mendukung`),
+    selesai
+      ? null
+      : el("p", { class: "redup" }, lap.jumlah_dukungan ? `${lap.jumlah_dukungan} warga mendukung` : "Belum ada dukungan"),
     el("a", { href: `#/laporan/${encodeURIComponent(lap.nomor)}` }, `Lihat detail ${lap.nomor}`),
   );
 }

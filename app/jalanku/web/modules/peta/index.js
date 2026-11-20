@@ -135,7 +135,10 @@ function halamanPeta(mode) {
         data = await api.get(`/api/peta?${q}`);
       } catch (galat) {
         if (ke !== permintaan) return;
-        ringkasan.textContent = `Peta gagal dimuat: ${galat.message}`;
+        // Kosongkan titik lama supaya peta tidak menampilkan hasil filter sebelumnya (review PR #20).
+        cluster.clearLayers();
+        catatanSimulasi.hidden = true;
+        ringkasan.textContent = `Peta gagal dimuat: ${galat.message}. Coba ubah filter atau muat ulang halaman.`;
         umumkan(galat.message);
         return;
       }

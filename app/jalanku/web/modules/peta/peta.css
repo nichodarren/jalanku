@@ -62,7 +62,7 @@
   box-shadow: 0 2px 8px rgb(0 0 0 / 35%); animation: cluster-pop 280ms ease-out;
 }
 .bubble-cluster.rusak { --warna: var(--warna-rusak); }
-.bubble-cluster.kurang-baik { --warna: var(--warna-kurang-baik); }
+.bubble-cluster.kurang-baik { --warna: var(--warna-kurang-baik); color: var(--warna-teks); } /* putih di oranye cuma 3,08:1 */
 .bubble-cluster.selesai { --warna: var(--warna-selesai); }
 .bubble-cluster.kecil { width: 36px; height: 36px; font-size: 0.85rem; }
 .bubble-cluster.menengah { width: 44px; height: 44px; font-size: 0.95rem; }
@@ -81,7 +81,7 @@
 .popup-nomor { font-weight: 700; display: flex; gap: 6px; align-items: center; }
 .lencana { display: inline-block; padding: 2px 8px; border-radius: 999px; color: #fff; font-size: 0.85rem; font-weight: 600; }
 .lencana.rusak { background: var(--warna-rusak); }
-.lencana.kurang-baik { background: var(--warna-kurang-baik); }
+.lencana.kurang-baik { background: var(--warna-kurang-baik); color: var(--warna-teks); } /* 5,38:1 (WCAG AA) */
 .lencana.selesai { background: var(--warna-selesai); }
 .lencana-simulasi {
   font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; padding: 1px 6px;

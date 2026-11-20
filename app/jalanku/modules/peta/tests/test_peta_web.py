@@ -63,3 +63,53 @@ def test_rute_peta_dan_riwayat_terdaftar():
     kode = _baca("index.js")
     assert '"#/peta"' in kode and '"#/riwayat"' in kode
     assert "/api/peta?" in kode and "/api/wilayah" in kode
+
+
+# --- Kontras teks (WCAG 2.2 AA, 4.5:1) - review PR #20 ------------------------------------------
+
+GAYA = Path(__file__).resolve().parents[3] / "web" / "shared" / "gaya.css"
+
+
+def _token(nama: str) -> str:
+    cocok = re.search(rf"{re.escape(nama)}:\s*(#[0-9a-fA-F]{{6}})", GAYA.read_text(encoding="utf-8"))
+    assert cocok, nama
+    return cocok.group(1)
+
+
+def _luminansi(hexa: str) -> float:
+    def kanal(c: int) -> float:
+        c /= 255
+        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+
+    r, g, b = (int(hexa[i : i + 2], 16) for i in (1, 3, 5))
+    return 0.2126 * kanal(r) + 0.7152 * kanal(g) + 0.0722 * kanal(b)
+
+
+def _kontras(a: str, b: str) -> float:
+    la, lb = sorted((_luminansi(a), _luminansi(b)), reverse=True)
+    return (la + 0.05) / (lb + 0.05)
+
+
+def _warna_teks(css: str, selektor: str) -> str:
+    """Warna teks yang dipasang untuk selektor ini di peta.css (bawaan putih)."""
+    cocok = re.search(rf"{re.escape(selektor)}\s*\{{[^}}]*?[^-]color:\s*(#[0-9a-fA-F]{{6}}|var\(--[\w-]+\))", css)
+    if not cocok:
+        return "#ffffff"
+    nilai = cocok.group(1)
+    return _token(nilai[4:-1]) if nilai.startswith("var(") else nilai
+
+
+@pytest.mark.parametrize("kelas", ["rusak", "kurang-baik", "selesai"])
+@pytest.mark.parametrize("dasar", [".bubble-cluster", ".lencana"])
+def test_teks_di_atas_warna_tingkat_cukup_kontras(dasar, kelas):
+    latar = _token(f"--warna-{kelas}")
+    teks = _warna_teks(_baca("peta.css"), f"{dasar}.{kelas}")
+    assert _kontras(latar, teks) >= 4.5, f"{dasar}.{kelas}: {teks} di atas {latar} = {_kontras(latar, teks):.2f}:1"
+
+
+def test_titik_lama_dikosongkan_bila_peta_gagal_dimuat():
+    kode = _baca("index.js")
+    tangkap = kode.split("} catch (galat) {", 1)
+    assert len(tangkap) == 2, "blok catch saat memuat /api/peta tidak ditemukan"
+    blok = tangkap[1].split("umumkan(galat.message)", 1)[0]
+    assert "cluster.clearLayers()" in blok
