@@ -12,7 +12,7 @@ body:
     validations: { required: true }
   - type: textarea
     id: alasan
-    attributes: { label: Alasan (bukti, umpan balik dosen/pengguna, temuan teknis) }
+    attributes: { label: "Alasan (bukti, umpan balik dosen/pengguna, temuan teknis)" }
     validations: { required: true }
   - type: checkboxes
     id: item
@@ -27,7 +27,7 @@ body:
         - label: Dependency (pyproject / lock)
   - type: textarea
     id: dampak
-    attributes: { label: Dampak (modul & pemilik, story, test, perkiraan jam, jadwal) }
+    attributes: { label: "Dampak (modul & pemilik, story, test, perkiraan jam, jadwal)" }
     validations: { required: true }
   - type: dropdown
     id: sifat

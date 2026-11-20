@@ -8,11 +8,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 
 from jalanku import __version__
-from jalanku.core import jalankan_migrasi, pengaturan
+from jalanku.core import TidakDitemukan, jalankan_migrasi, pengaturan
+from jalanku.core import tile as peta_tile
 from jalanku.core.galat import pasang_penangan_galat
 from jalanku.core.keamanan import pasang_keamanan
 from jalanku.modules import ai, akun, laporan, moderasi, notifikasi, pelaporan, penanganan, peta, statistik, wilayah
@@ -51,6 +52,17 @@ def buat_app(*, sertakan_dev: bool | None = None, migrasi: bool = True) -> FastA
     @app.get("/api/kesehatan", tags=["sistem"], summary="Cek hidup (untuk uptime monitor)")
     def kesehatan() -> dict:
         return {"status": "ok", "versi": __version__, "ai_aktif": ai.model_aktif()}
+
+    @app.get("/api/tile/{z}/{x}/{y}.png", include_in_schema=False)
+    def tile(z: int, x: int, y: int, request: Request) -> Response:
+        # Proxy tile OSM (core/tile.py): browser cukup bicara ke origin sendiri. Bukan bagian kontrak API.
+        try:
+            data = peta_tile.ambil(z, x, y, klien=request.client.host if request.client else "-")
+        except peta_tile.TileTidakValid as e:
+            raise TidakDitemukan(str(e)) from None
+        if data is None:
+            return Response(status_code=502, headers={"Cache-Control": "no-store"})
+        return Response(data, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
 
     app.mount("/", StaticFiles(directory=FOLDER_WEB, html=True), name="web")
     return app
