@@ -11,7 +11,7 @@ import random
 
 from PIL import Image, ImageDraw
 
-from jalanku.core import TidakValid, pengaturan
+from jalanku.core import GalatDomain, TidakValid, pengaturan
 from jalanku.modules import laporan, wilayah
 from jalanku.modules.akun import layanan as _akun_dev  # masuk_dev hanya untuk dev/test
 
@@ -25,9 +25,27 @@ def _foto_simulasi(teks: str) -> bytes:
     return buf.getvalue()
 
 
+# Titik yang pasti di dalam DKI Jakarta, dipakai untuk mengecek data wilayah sebelum membuat apa pun.
+_MONAS = (-6.1754, 106.8272)
+
+
+class DataBelumSiap(Exception):
+    """Data pendukung (mis. batas kecamatan) belum disiapkan; pesannya berisi cara menyiapkannya."""
+
+
+def _pastikan_wilayah_siap() -> None:
+    try:
+        wilayah.tentukan_wilayah(*_MONAS)
+    except GalatDomain as galat:
+        raise DataBelumSiap(str(galat)) from galat
+
+
 def buat_contoh_data(jumlah: int = 30, benih: int = 7) -> list[str]:
+    """Buat laporan SIMULASI. Melempar ``DataBelumSiap`` SEBELUM ada akun/laporan yang dibuat bila
+    data wilayah belum siap, supaya perintah bisa diulang dengan bersih setelah data disiapkan."""
     if pengaturan().produksi:
         raise TidakValid("Data contoh tidak boleh dibuat di produksi.")
+    _pastikan_wilayah_siap()
     acak = random.Random(benih)  # noqa: S311 - bukan kriptografi
     pelapor, _ = _akun_dev.masuk_dev("warga.simulasi@contoh.test", "pelapor", nama="Warga Simulasi")
     petugas, _ = _akun_dev.masuk_dev(
