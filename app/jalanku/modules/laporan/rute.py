@@ -5,11 +5,11 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends
 from fastapi.responses import FileResponse
 
-from jalanku.core import BelumDibuat, TidakDitemukan, jalur_berkas
+from jalanku.core import TidakDitemukan, jalur_berkas
 from jalanku.modules.akun import PERAN_ADMIN, Pengguna, pengguna_opsional
 
 from . import layanan
-from .skema import DetailLaporanKeluaran, EntriTimelineKeluaran, FotoKeluaran, JejakKeluaran
+from .skema import DetailLaporanKeluaran, EntriJejakKeluaran, EntriTimelineKeluaran, FotoKeluaran, JejakKeluaran
 
 router = APIRouter(tags=["laporan"])
 
@@ -54,7 +54,9 @@ def detail(nomor: str, penonton: Pengguna | None = Depends(pengguna_opsional)):
     summary="US-32 jejak audit anti-ubah (rantai hash timeline)",
 )
 def jejak(nomor: str, penonton: Pengguna | None = Depends(pengguna_opsional)):
-    raise BelumDibuat("US-32", "M1")
+    lap = layanan.ambil_untuk_penonton(nomor, penonton)  # BR-06: sama dengan detail (404 bila tidak boleh)
+    utuh, entri = layanan.periksa_jejak(lap)
+    return JejakKeluaran(nomor=lap.nomor, utuh=utuh, entri=[EntriJejakKeluaran(**e) for e in entri])
 
 
 @router.get("/api/foto/{foto_id}", response_class=FileResponse, summary="Berkas foto (tanpa EXIF) sesuai visibilitas")

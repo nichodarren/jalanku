@@ -8,6 +8,7 @@ dicari dengan ``TODO(TS-02)``:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sqlite3
 
@@ -109,13 +110,34 @@ def _simpan_foto(kon: sqlite3.Connection, laporan_id: int, jenis: str, bersih: b
     )
 
 
+def _hash_entri(sebelum: str, dari: str | None, ke: str, pelaku: str, catatan: str, waktu: str) -> str:
+    """BR-09: ``sha256(hash entri sebelumnya + isi entri)``. Isi dikodekan JSON (bukan digabung dengan "|")
+    supaya tidak ambigu: catatan yang memuat "|" tidak bisa dipakai menggeser isi antar-field."""
+    isi = json.dumps([dari, ke, pelaku, catatan, waktu], ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256((sebelum + isi).encode("utf-8")).hexdigest()
+
+
 def _catat(kon, laporan_id: int, dari: str | None, ke: str, pelaku: str, pengguna_id: int | None, catatan: str):
-    # TODO(US-32): hitung hash = sha256(hash entri sebelumnya laporan ini + dari|ke|pelaku|catatan|waktu)
-    #              dan simpan ke kolom `hash` supaya riwayat tidak bisa diubah diam-diam.
+    """Tambah entri timeline yang dirantai hash (US-32). Dipanggil di dalam transaksi ``BEGIN IMMEDIATE``,
+    jadi entri sebelumnya yang dibaca di sini pasti entri terakhir laporan itu."""
+    waktu = sekarang()
+    terakhir = kon.execute(
+        "SELECT hash FROM laporan_timeline WHERE laporan_id = ? ORDER BY id DESC LIMIT 1", (laporan_id,)
+    ).fetchone()
+    sebelum = terakhir[0] if terakhir and terakhir[0] else ""
     kon.execute(
-        """INSERT INTO laporan_timeline (laporan_id, dari_status, ke_status, pelaku, pengguna_id, catatan, waktu)
-           VALUES (?, ?, ?, ?, ?, ?, ?)""",
-        (laporan_id, dari, ke, pelaku, pengguna_id, catatan, sekarang()),
+        """INSERT INTO laporan_timeline (laporan_id, dari_status, ke_status, pelaku, pengguna_id, catatan, waktu, hash)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        (
+            laporan_id,
+            dari,
+            ke,
+            pelaku,
+            pengguna_id,
+            catatan,
+            waktu,
+            _hash_entri(sebelum, dari, ke, pelaku, catatan, waktu),
+        ),
     )
 
 
@@ -300,6 +322,31 @@ def timeline(laporan_id: int) -> list[EntriTimeline]:
     finally:
         kon.close()
     return [EntriTimeline(b["dari_status"], b["ke_status"], b["pelaku"], b["catatan"], b["waktu"]) for b in rows]
+
+
+def periksa_jejak(laporan: Laporan) -> tuple[bool, list[dict]]:
+    """US-32: hitung ulang rantai hash timeline. ``utuh`` = setiap hash cocok DAN ujung rantai sama dengan
+    status laporan sekarang (menghapus entri terakhir juga ketahuan). Entri tanpa catatan & pengguna."""
+    kon = koneksi()
+    try:
+        rows = kon.execute(
+            "SELECT dari_status, ke_status, pelaku, catatan, waktu, hash FROM laporan_timeline"
+            " WHERE laporan_id = ? ORDER BY id",
+            (laporan.id,),
+        ).fetchall()
+    finally:
+        kon.close()
+    utuh = bool(rows) and rows[-1]["ke_status"] == laporan.status
+    sebelum = ""
+    for b in rows:
+        harap = _hash_entri(sebelum, b["dari_status"], b["ke_status"], b["pelaku"], b["catatan"], b["waktu"])
+        if b["hash"] != harap:
+            utuh = False
+        sebelum = harap
+    entri = [
+        {"ke_status": b["ke_status"], "pelaku": b["pelaku"], "waktu": b["waktu"], "hash": b["hash"] or ""} for b in rows
+    ]
+    return utuh, entri
 
 
 # --- Mengubah ----------------------------------------------------------------------------------

@@ -120,7 +120,6 @@ def test_hasil_ai_foto_sesudah_tampil_publik(klien):
     assert sesudah["hasil_ai"]["kelas"] == "baik"
 
 
-def test_jejak_audit_terdaftar_tapi_belum_dibuat(klien):
-    """US-32 masih stub: endpoint ada di kontrak, menjawab 501."""
-    lap = laporan.buat_laporan(_baru())
-    assert klien.get(f"/api/laporan/{lap.nomor}/jejak").status_code == 501
+def test_jejak_audit_terdaftar_di_kontrak(klien):
+    """US-32: endpoint jejak ada di kontrak OpenAPI. Perilakunya diuji di ``test_jejak.py``."""
+    assert "/api/laporan/{nomor}/jejak" in klien.get("/api/openapi.json").json()["paths"]
