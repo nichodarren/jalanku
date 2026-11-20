@@ -263,3 +263,18 @@ def test_peta_dasar_memakai_proxy_dengan_batas_yang_sama_dengan_server():
     angka = [float(a) for a in re.findall(r"-?\d+\.\d+", js.split("const BATAS_TILE")[1].split(";")[0])]
     b = t.BATAS
     assert angka == [b["lat_min"], b["lon_min"], b["lat_max"], b["lon_max"]]
+
+
+def test_unduhan_ke_osm_dibatasi_global_walau_tiap_klien_masih_di_bawah_jatah():
+    # Saran review #31: banyak IP bersama-sama tidak boleh membuat server mengunduh massal dari OSM.
+    per_klien = t.MAKS_UNDUH_PER_MENIT // 2
+    jumlah_klien = t.MAKS_UNDUH_GLOBAL_PER_MENIT // per_klien
+    n = 0
+    for k in range(jumlah_klien):
+        for _ in range(per_klien):
+            t.ambil(19, 417000 + n, 271155, klien=f"10.0.0.{k}", unduh=lambda *a: PNG)
+            n += 1
+    assert n == t.MAKS_UNDUH_GLOBAL_PER_MENIT
+    with pytest.raises(TerlaluBanyak):
+        t.ambil(19, 417000 + n, 271155, klien="10.0.9.9", unduh=lambda *a: PNG)  # klien baru pun ditolak
+    assert t.MAKS_UNDUH_PER_MENIT < t.MAKS_UNDUH_GLOBAL_PER_MENIT

@@ -40,9 +40,21 @@ def main(argv: list[str] | None = None) -> int:
     a = p.parse_args(argv)
 
     if a.perintah == "jalan":
+        import os
+
         import uvicorn
 
-        uvicorn.run("jalanku.main:buat_app", factory=True, host=a.host, port=a.port, reload=a.reload)
+        # IP klien asli di balik reverse proxy (dipakai rate limit): percayai X-Forwarded-For hanya dari
+        # proxy di JALANKU_PROXY_TEPERCAYA (bawaan 127.0.0.1), supaya header palsu dari internet diabaikan.
+        uvicorn.run(
+            "jalanku.main:buat_app",
+            factory=True,
+            host=a.host,
+            port=a.port,
+            reload=a.reload,
+            proxy_headers=True,
+            forwarded_allow_ips=os.environ.get("JALANKU_PROXY_TEPERCAYA", "127.0.0.1"),
+        )
         return 0
     if a.perintah == "migrasi":
         from jalanku.core import jalankan_migrasi
