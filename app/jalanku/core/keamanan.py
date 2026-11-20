@@ -17,7 +17,7 @@ METODE_MENGUBAH = {"POST", "PUT", "PATCH", "DELETE"}
 
 CSP = (
     "default-src 'self'; "
-    "img-src 'self' data: blob: https://*.tile.openstreetmap.org; "
+    "img-src 'self' data: blob:; "  # tile peta lewat /api/tile (core/tile.py)
     "script-src 'self'; style-src 'self'; connect-src 'self'; "
     "font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 )
