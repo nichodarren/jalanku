@@ -23,4 +23,4 @@ body:
     validations: { required: true }
   - type: textarea
     id: bukti
-    attributes: { label: Bukti (log, tangkapan layar, versi browser) }
+    attributes: { label: "Bukti (log, tangkapan layar, versi browser)" }
