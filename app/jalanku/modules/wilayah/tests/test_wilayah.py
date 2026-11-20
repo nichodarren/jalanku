@@ -58,7 +58,9 @@ def test_lubang_poligon_tidak_mendapat_sudin(simulasi):
 def test_data_tidak_tersedia(klien, isi):
     if isi is not None:
         (pengaturan().folder_data / NAMA_BERKAS).write_text(isi)
-    assert klien.get("/api/wilayah").status_code == 503
+    respons = klien.get("/api/wilayah")
+    assert respons.status_code == 503
+    assert "python -m jalanku.modules.wilayah.data.setup_wilayah" in respons.json()["detail"]
 
 
 @pytest.mark.parametrize(("lat", "lon"), [(float("nan"), 100), (-91, 0), (0, 181)])
@@ -94,14 +96,22 @@ TITIK_NYATA = [
 ]
 
 
+@pytest.fixture(scope="session")
+def batas_asli() -> Path:
+    # Ambil konfigurasi sesi sebelum fixture per-test mengisolasi DB dan folder data.
+    sumber = pengaturan().folder_data / NAMA_BERKAS
+    if not sumber.is_file():
+        pytest.fail(
+            f"{sumber} belum tersedia. Dari app/, jalankan python -m jalanku.modules.wilayah.data.setup_wilayah"
+        )
+    return sumber
+
+
 @pytest.mark.parametrize(
     ("nama", "lat", "lon", "kota", "kecamatan", "instansi"), TITIK_NYATA, ids=[t[0] for t in TITIK_NYATA]
 )
-def test_titik_nyata(nama, lat, lon, kota, kecamatan, instansi):
-    sumber = Path(__file__).resolve().parents[4] / "var" / NAMA_BERKAS
-    if not sumber.is_file():
-        pytest.skip("Uji batas asli membutuhkan GeoJSON lokal TS-04 di app/var/")
-    shutil.copyfile(sumber, pengaturan().folder_data / NAMA_BERKAS)
+def test_titik_nyata(batas_asli, nama, lat, lon, kota, kecamatan, instansi):
+    shutil.copyfile(batas_asli, pengaturan().folder_data / NAMA_BERKAS)
     hasil = wilayah.tentukan_wilayah(lat, lon)
     assert (hasil.di_dalam, hasil.kota, hasil.kecamatan, hasil.instansi.id if hasil.instansi else None) == (
         kota is not None,

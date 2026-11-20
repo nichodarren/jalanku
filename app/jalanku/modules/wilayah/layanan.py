@@ -54,7 +54,10 @@ def _indeks() -> _Indeks:
     try:
         return _muat_indeks(jalur, jalur.stat().st_mtime_ns)
     except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, ShapelyError) as galat:
-        raise _DataTidakTersedia("Data batas kecamatan belum tersedia atau rusak.") from galat
+        raise _DataTidakTersedia(
+            "Data batas kecamatan belum tersedia atau rusak. Dari app/, jalankan "
+            "python -m jalanku.modules.wilayah.data.setup_wilayah"
+        ) from galat
 
 
 def _ke_instansi(b) -> Instansi:

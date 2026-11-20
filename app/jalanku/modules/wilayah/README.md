@@ -17,7 +17,19 @@ Hanya nama di `__all__` pada [`__init__.py`](__init__.py). Tanda tangan terkunci
 
 ## Penentuan Sudin (US-07)
 
-Sediakan hasil TS-04 di `app/var/wilayah-dki-jakarta.geojson`, atau di folder `JALANKU_DATA` yang dipakai server.
+Dari `app/`, setelah memasang dependency, siapkan data satu kali per checkout atau runner CI:
+
+```bash
+python -m jalanku.modules.wilayah.data.setup_wilayah
+```
+
+Perintah ini membutuhkan internet, mengunduh arsip GADM pada revisi tetap, memeriksa SHA-256,
+lalu menjalankan konverter TS-04 untuk 42 kecamatan di lima kota. Hasilnya ada di
+`app/var/wilayah-dki-jakarta.geojson`. Jika memakai `JALANKU_DATA`, tetapkan folder yang sama
+saat setup, menjalankan aplikasi, dan menguji. Aplikasi dapat memakai hasil setup secara offline.
+Ulangi perintah jika berkas hilang atau rusak. Simpan data hanya untuk penggunaan lokal
+atau pengujian akademik di runner. Jangan commit GeoJSON atau mengunggahnya sebagai artifact CI.
+
 Panggil `tentukan_wilayah(lat, lon)` lewat antarmuka publik. Titik di dalam poligon menghasilkan kecamatan, kota,
 dan Sudin kota itu. Titik luar menghasilkan `HasilWilayah(False, None, None, None)`. Jika dua kecamatan mencakup
 titik persis di batas bersama, urutan alfabetis pasangan kota/kecamatan menentukan hasilnya.
@@ -34,14 +46,14 @@ Data hilang atau rusak menghasilkan galat 503. Perubahan kanal instansi dijadwal
 - [ ] US-08: di luar → `KANAL_LUAR_WILAYAH` (SP4N-LAPOR!)
 - [x] NFR-FUN-01: test 3 titik per kota + 5 titik luar cakupan di `tests/test_wilayah.py`.
   Dari `app/`, jalankan `python -m pytest jalanku/modules/wilayah/tests/test_wilayah.py -k titik_nyata -v`.
-  Siapkan GeoJSON TS-04 di `app/var/` untuk menjalankan 20 kasus ini. Pada checkout tanpa data lokal,
-  pytest menandainya sebagai dilewati; test SIMULASI tetap berjalan.
+  Semua 20 kasus wajib berjalan. Jika setup belum dilakukan, pytest gagal dengan petunjuk setup.
 - [ ] US-26: PATCH kanal instansi (URL wajib http/https), halaman `web/modules/wilayah/`
 
 ## Cara kerja di modul ini
 
 ```bash
 cd app
+python -m jalanku.modules.wilayah.data.setup_wilayah
 python -m pytest jalanku/modules/wilayah     # test modul ini saja
 python -m pytest tests/arsitektur        # batas modul & kontrak
 python -m jalanku contoh-data            # data SIMULASI di DB lokal
