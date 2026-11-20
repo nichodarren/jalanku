@@ -17,12 +17,12 @@ Hanya nama di `__all__` pada [`__init__.py`](__init__.py). Tanda tangan terkunci
 
 ## Status stub (baseline 19 Nov 2026)
 
-Sudah bekerja di DB: buat, ambil, cari, transisi BR-03 per pelaku, timeline, dukungan, detail publik, berkas foto. Visibilitas BR-06 lengkap dengan test; foto laporan privat dikirim `Cache-Control: private, no-store`. Belum: pembersihan foto dan syarat transisi lengkap (PR terpisah). Cari `TODO(` di folder ini.
+Sudah bekerja di DB: buat, ambil, cari, transisi BR-03 per pelaku, timeline, dukungan, detail publik, berkas foto. TS-02 selesai: foto dibersihkan sebelum disimpan (`_foto.py`); syarat transisi BR-03 lengkap (`_cek_syarat`; data kurang → 400, keadaan tidak memungkinkan → 409); visibilitas BR-06 lengkap dengan test, foto laporan privat dikirim `Cache-Control: private, no-store`. Cari `TODO(` di folder ini untuk sisa pekerjaan.
 
 ## Pekerjaan
 
-- [ ] TS-02: `_simpan_foto` → validasi isi (Pillow), buang EXIF, encode ulang JPEG ≤ 1 MB (NFR-PRI-02, NFR-SEC-02)
-- [ ] TS-02: syarat transisi di domain (tingkat wajib, alasan wajib, induk aktif, banding sekali & hanya untuk penolakan AI, foto sesudah wajib)
+- [x] TS-02: foto aman di `_foto.py` → validasi isi (Pillow), buang EXIF, encode ulang JPEG ≤ 1 MB (NFR-PRI-02, NFR-SEC-02)
+- [x] TS-02: syarat transisi di domain (`_cek_syarat`: tingkat wajib, alasan ≥ 5 karakter, induk aktif, banding sekali & hanya untuk penolakan AI, foto sesudah wajib) + keterangan ≤ 280 karakter ditolak bila lebih
 - [x] TS-02: visibilitas BR-06 (`boleh_dilihat`, `boleh_lihat_hasil_ai`) + test matriks status × penonton; petugas tidak punya hak lihat tambahan (daftar tugas per wilayah = modul `penanganan`); header cache foto publik/privat
 - [ ] US-17: halaman detail `web/modules/laporan/` (foto sebelum/sesudah, timeline berlabel pelaku, penanda SIMULASI)
 

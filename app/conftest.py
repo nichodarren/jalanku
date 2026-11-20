@@ -5,8 +5,11 @@ Setiap test berjalan dengan basis data & folder berkas baru di folder sementara 
 
 from __future__ import annotations
 
+import io
+
 import pytest
 from fastapi.testclient import TestClient
+from PIL import Image
 
 from jalanku.core import jalankan_migrasi, muat_ulang_pengaturan
 from jalanku.core.keamanan import reset_batas
@@ -22,6 +25,14 @@ TITIK = {
     "grogol": (-6.1666, 106.7900),
     "kota_tangerang": (-6.1781, 106.6300),
 }
+
+
+def foto_bytes(w: int = 800, h: int = 600, fmt: str = "JPEG", exif: bytes | None = None, warna=(90, 90, 90)) -> bytes:
+    """Gambar uji asli (bukan foto jalan sungguhan) untuk test yang butuh foto valid."""
+    buf = io.BytesIO()
+    kw = {"exif": exif} if exif is not None else {}
+    Image.new("RGB", (w, h), warna).save(buf, fmt, **kw)
+    return buf.getvalue()
 
 
 @pytest.fixture(autouse=True)
