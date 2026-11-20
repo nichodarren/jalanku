@@ -41,7 +41,16 @@ def test_memakai_kontrak_detail_dan_instansi():
     kode = _baca("index.js")
     assert "/api/laporan/${encodeURIComponent(" in kode  # nomor dari URL di-encode
     assert '"/api/instansi"' in kode
-    for field in ("foto", "timeline", "jumlah_dukungan", "diperiksa_oleh", "simulasi", "instansi_id", "ke_status", "pelaku"):
+    for field in (
+        "foto",
+        "timeline",
+        "jumlah_dukungan",
+        "diperiksa_oleh",
+        "simulasi",
+        "instansi_id",
+        "ke_status",
+        "pelaku",
+    ):
         assert field in kode, field
     assert "pelapor_id" not in kode
 
