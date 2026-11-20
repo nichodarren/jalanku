@@ -79,6 +79,16 @@ def test_kosong_dan_terlalu_besar_ditolak():
         bersihkan_foto(b"x" * (MAKS_INPUT_BYTES + 1))
 
 
+def test_batas_ukuran_tepat_10mb_diterima_lebih_satu_byte_ditolak():
+    # JPEG asli + padding setelah penanda akhir: ukurannya persis di batas, isinya tetap gambar sah.
+    foto = foto_bytes()
+    pas = foto + b"\0" * (MAKS_INPUT_BYTES - len(foto))
+    assert len(pas) == MAKS_INPUT_BYTES
+    assert len(bersihkan_foto(pas)) <= MAKS_SIMPAN_BYTES
+    with pytest.raises(TidakValid, match="maksimal"):
+        bersihkan_foto(pas + b"\0")
+
+
 def test_foto_besar_dikompres_di_bawah_1mb():
     im = Image.frombytes("RGB", (1800, 1400), os.urandom(1800 * 1400 * 3))  # derau acak: sulit dikompres
     buf = io.BytesIO()

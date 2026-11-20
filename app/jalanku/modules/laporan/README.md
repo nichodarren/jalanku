@@ -17,12 +17,12 @@ Hanya nama di `__all__` pada [`__init__.py`](__init__.py). Tanda tangan terkunci
 
 ## Status stub (baseline 19 Nov 2026)
 
-Sudah bekerja di DB: buat, ambil, cari, transisi BR-03 per pelaku, timeline, dukungan, detail publik, berkas foto. Foto dibersihkan sebelum disimpan (`_foto.py`). Belum: syarat transisi lengkap dan visibilitas petugas. Cari `TODO(` di folder ini.
+Sudah bekerja di DB: buat, ambil, cari, transisi BR-03 per pelaku, timeline, dukungan, detail publik, berkas foto. Foto dibersihkan sebelum disimpan (`_foto.py`). Syarat transisi BR-03 lengkap (`_cek_syarat`; data kurang → 400, keadaan tidak memungkinkan → 409). Belum: visibilitas petugas. Cari `TODO(` di folder ini.
 
 ## Pekerjaan
 
 - [x] TS-02: foto aman di `_foto.py` → validasi isi (Pillow), buang EXIF, encode ulang JPEG ≤ 1 MB (NFR-PRI-02, NFR-SEC-02)
-- [ ] TS-02: syarat transisi di domain (tingkat wajib, alasan wajib, induk aktif, banding sekali & hanya untuk penolakan AI, foto sesudah wajib)
+- [x] TS-02: syarat transisi di domain (`_cek_syarat`: tingkat wajib, alasan ≥ 5 karakter, induk aktif, banding sekali & hanya untuk penolakan AI, foto sesudah wajib) + keterangan ≤ 280 karakter ditolak bila lebih
 - [ ] TS-02: visibilitas untuk petugas; test lengkap BR-06
 - [ ] US-17: halaman detail `web/modules/laporan/` (foto sebelum/sesudah, timeline berlabel pelaku, penanda SIMULASI)
 
