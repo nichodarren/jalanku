@@ -1,6 +1,6 @@
 """Perilaku domain laporan yang SUDAH dijamin sejak baseline (dipakai modul lain).
 
-M1 menambah test untuk TODO(TS-02): foto tanpa EXIF, syarat transisi, visibilitas foto.
+Test TS-02 ada di berkas terpisah: `test_foto.py`, `test_transisi.py`, dan `test_visibilitas.py`.
 """
 
 from __future__ import annotations
