@@ -80,6 +80,16 @@ def test_laporan_aktif_24_m_ditawarkan_sebagai_duplikat(buat_klien, klien):
     assert j["duplikat"][0]["jumlah_dukungan"] == 0
 
 
+def test_laporan_menunggu_verifikasi_ikut_ditawarkan(buat_klien, klien):
+    """Keputusan PO: BR-02 menghitung Menunggu Verifikasi sebagai aktif, jadi ikut ditawarkan.
+    Yang tampil hanya nomor, jarak, status, tingkat, dan jumlah dukungan (tanpa identitas atau foto)."""
+    nomor = _lapor(buat_klien("pelapor"), *MONAS)
+    kandidat = _lokasi(klien, *MONAS).json()["duplikat"]
+    assert [d["nomor"] for d in kandidat] == [nomor]
+    assert kandidat[0]["status"] == "menunggu_verifikasi"
+    assert set(kandidat[0]) == {"nomor", "jarak_m", "status", "tingkat", "jumlah_dukungan"}
+
+
 def test_laporan_aktif_26_m_bukan_duplikat(buat_klien, klien):
     _lapor(buat_klien("pelapor"), *MONAS)
     assert _lokasi(klien, MONAS[0] + 0.000235, MONAS[1]).json()["duplikat"] == []  # ±26,1 m
