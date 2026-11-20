@@ -21,7 +21,7 @@ Semua endpoint 501 dengan skema lengkap; otorisasi Admin sudah bekerja. Cari `TO
 
 ## Pekerjaan
 
-- [ ] US-12: antrean = `laporan.cari_laporan(status=STATUS_MENUNGGU)` urut banding dulu; aksi lewat `laporan.ubah_status(..., pelaku=PELAKU_ADMIN, label_akhir=...)`
+- [x] US-12: antrean = `laporan.cari_laporan(status=STATUS_MENUNGGU)` urut banding dulu; aksi lewat `laporan.ubah_status(..., pelaku=PELAKU_ADMIN, label_akhir=...)`
 - [ ] US-13: banding hanya bila `diperiksa_oleh == 'ai'` dan `banding_pada is None`
 - [ ] US-14: paket penerusan tanpa identitas (test eksplisit: email & nama pelapor tidak muncul)
 - [ ] US-21: koreksi → `laporan.ubah_tingkat` + baris `moderasi_koreksi`
