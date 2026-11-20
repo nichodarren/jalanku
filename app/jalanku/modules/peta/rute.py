@@ -1,7 +1,6 @@
-"""Endpoint data peta publik. Pemilik: M6. STUB: 501.
+"""Endpoint data peta publik (US-15 aktif, US-16 riwayat). Pemilik: M6.
 
-Petunjuk: aktif = laporan.cari_laporan(status=(STATUS_BELUM, STATUS_SEDANG)); riwayat = STATUS_SELESAI.
-Jangan pernah menyertakan pelapor_id (NFR-PRI-01).
+Publik tanpa login; hanya status publik yang tampil dan pelapor_id tidak pernah ikut (NFR-PRI-01).
 """
 
 from __future__ import annotations
@@ -10,8 +9,7 @@ from typing import Literal
 
 from fastapi import APIRouter
 
-from jalanku.core import BelumDibuat
-
+from .layanan import titik_peta
 from .skema import TitikPetaKeluaran
 
 router = APIRouter(tags=["peta"])
@@ -19,4 +17,6 @@ router = APIRouter(tags=["peta"])
 
 @router.get("/api/peta", response_model=list[TitikPetaKeluaran], summary="FR-PETA-01/02 data bubble")
 def data_peta(mode: Literal["aktif", "riwayat"] = "aktif", kota: str | None = None, tingkat: str | None = None):
-    raise BelumDibuat("US-15 / US-16", "M6")
+    # kota & tingkat boleh beberapa nilai dipisah koma (maks. 10). Sengaja tanpa docstring:
+    # docstring ikut masuk OpenAPI dan mengubah snapshot kontrak.
+    return titik_peta(mode, kota, tingkat)
