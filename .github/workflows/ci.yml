@@ -43,6 +43,10 @@ jobs:
       - name: Arsitektur (batas modul + kontrak terkunci)
         run: python -m pytest tests/arsitektur -q
 
+      - name: Siapkan GeoJSON wilayah (bila skrip tersedia)
+        if: hashFiles('app/jalanku/modules/wilayah/data/setup_wilayah.py') != ''
+        run: python -m jalanku.modules.wilayah.data.setup_wilayah
+
       - name: Semua test + coverage (minimal 80%)
         run: python -m pytest -q --cov=jalanku --cov-report=term-missing --cov-report=xml --cov-fail-under=80
 
