@@ -7,7 +7,7 @@ Policy OSM dan menyimpannya di ``<JALANKU_DATA>/tile`` selama 7 hari.
 
 Bukan proxy terbuka: URL tujuan tetap (tidak ada SSRF), hanya zoom 10 sampai 19 di kotak DKI Jakarta
 (termasuk Kepulauan Seribu), balasan wajib PNG ≤ 512 KB, dan unduhan ke OSM (cache miss) dibatasi
-per klien. Hanya dipakai ``main.py``; tidak diekspor di ``__all__``.
+per klien dan untuk semua klien bersama. Hanya dipakai ``main.py``; tidak diekspor di ``__all__``.
 """
 
 from __future__ import annotations
@@ -32,6 +32,7 @@ BATAS = {"lon_min": 106.3, "lon_max": 107.2, "lat_min": -6.5, "lat_max": -5.1}
 UMUR_CACHE_DETIK = 7 * 24 * 3600
 MAKS_BYTE_TILE = 512 * 1024
 MAKS_UNDUH_PER_MENIT = 300  # per klien; tile dari cache tidak dihitung
+MAKS_UNDUH_GLOBAL_PER_MENIT = 600  # semua klien bersama: mencegah unduhan massal (Tile Usage Policy OSM)
 PNG_AWAL = b"\x89PNG\r\n\x1a\n"
 
 Pengunduh = Callable[[int, int, int], bytes]
@@ -99,6 +100,7 @@ def ambil(z: int, x: int, y: int, *, klien: str = "-", unduh: Pengunduh | None =
         lama = jalur.read_bytes()
         if time.time() - jalur.stat().st_mtime < UMUR_CACHE_DETIK:
             return lama
+    batasi("tile:semua", MAKS_UNDUH_GLOBAL_PER_MENIT, 60, "Peta sedang ramai. Coba lagi sebentar.")
     batasi(f"tile:{klien}", MAKS_UNDUH_PER_MENIT, 60, "Terlalu banyak permintaan peta. Coba lagi sebentar.")
     try:
         data = (unduh or unduh_osm)(z, x, y)

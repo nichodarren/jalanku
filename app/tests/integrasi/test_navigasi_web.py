@@ -47,3 +47,8 @@ def test_tampilan_lebar_tidak_berubah():
     css = (WEB / "shared" / "gaya.css").read_text(encoding="utf-8")
     luar = css.replace(_blok_media_sempit(css), "")
     assert "position: fixed" not in re.search(r"#navigasi \{(.*?)\}", luar, re.S).group(1)
+
+
+def test_membuka_halaman_tidak_menggulir_sendiri():
+    # Saran review #32: fokus ke isi untuk pembaca layar tanpa membuat halaman melompat.
+    assert "wadah.focus({ preventScroll: true })" in (WEB / "app.js").read_text(encoding="utf-8")
