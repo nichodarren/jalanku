@@ -17,14 +17,14 @@ Hanya nama di `__all__` pada [`__init__.py`](__init__.py). Tanda tangan terkunci
 
 ## Status stub (baseline 19 Nov 2026)
 
-`GET /api/petugas/laporan` dan `POST /api/petugas/laporan/{nomor}/status` sudah bekerja (wilayah dicek di server, foto wajib saat Selesai). Masih 501: `urut=prioritas` (US-20). `verifikasi_foto` masih `null` (US-31). Frontend `#/petugas` menyusul. Cari `TODO(` di folder ini.
+`GET /api/petugas/laporan` dan `POST /api/petugas/laporan/{nomor}/status` sudah bekerja (wilayah dicek di server, foto wajib saat Selesai). Masih 501: `urut=prioritas` (US-20). `verifikasi_foto` masih `null` (US-31). Frontend `#/petugas`: ringkasan, filter status, peta titik wilayah, kartu laporan dengan tombol Mulai dikerjakan dan form Selesai + foto. Cari `TODO(` di folder ini.
 
 ## Pekerjaan
 
 - [x] US-18 (backend): laporan Belum/Sedang/Selesai di kota instansinya (`wilayah.boleh_menangani`, DINAS_BM semua), filter status; test di `tests/test_petugas_api.py`
-- [ ] US-18 (frontend): `#/petugas` peta + daftar
+- [x] US-18 (frontend): `#/petugas` ringkasan, filter status, peta + daftar kartu (penjaga statis di `tests/test_petugas_web.py`)
 - [x] US-19 (backend): cek wilayah → 403 bila bukan wilayahnya (dicek sebelum foto); Selesai tanpa foto → 400 bila `pengaturan().wajib_foto_selesai`; foto maks 10 MB
-- [ ] US-19 (frontend): tombol Mulai dikerjakan / Selesai + unggah foto
+- [x] US-19 (frontend): tombol Mulai dikerjakan, form Selesai + unggah foto, pesan galat server tampil di kartu
 - [ ] US-20: skor BR-05 sebagai fungsi murni (TDD)
 
 - [ ] **US-31 bukti perbaikan diverifikasi AI (Should, pembeda utama):** saat Selesai, `ai.periksa_foto(foto)` → `laporan.ubah_status(..., hasil_ai_sesudah=hasil.sebagai_dict())`; isi `verifikasi_foto` di respons; foto yang tidak dinilai `baik` → tanda "perlu ditinjau"
