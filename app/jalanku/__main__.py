@@ -67,11 +67,16 @@ def main(argv: list[str] | None = None) -> int:
         print("Kontrak cocok dengan snapshot.")
         return 0
     if a.perintah == "contoh-data":
-        from jalanku.contoh import buat_contoh_data
+        from jalanku.contoh import DataBelumSiap, buat_contoh_data
         from jalanku.core import jalankan_migrasi
 
         jalankan_migrasi()
-        nomor = buat_contoh_data(a.jumlah)
+        try:
+            nomor = buat_contoh_data(a.jumlah)
+        except DataBelumSiap as galat:
+            print(f"Data contoh belum dibuat: {galat}", file=sys.stderr)
+            print("Setelah itu jalankan lagi: python -m jalanku contoh-data", file=sys.stderr)
+            return 1
         print(f"{len(nomor)} laporan SIMULASI dibuat ({nomor[0] if nomor else '-'} dst.).")
         return 0
     pemilik = {"peran": "US-01, M2", "backup": "TS-03, M4", "uji-ai": "US-05/SPIKE-02, M4"}[a.perintah]
