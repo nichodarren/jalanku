@@ -438,6 +438,10 @@
       "jenis": "fungsi",
       "tanda_tangan": "(laporan_id: 'int') -> 'int'"
     },
+    "jumlah_dukungan_massal": {
+      "jenis": "fungsi",
+      "tanda_tangan": "(laporan_ids: 'list[int]') -> 'dict[int, int]'"
+    },
     "pasang": {
       "jenis": "fungsi",
       "tanda_tangan": "() -> 'None'"
