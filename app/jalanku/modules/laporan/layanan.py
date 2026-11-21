@@ -1,11 +1,8 @@
 """Domain laporan: penyimpanan, nomor, siklus status (BR-03), timeline, dukungan, visibilitas (BR-06).
 
-Status baseline 19 Nov 2026 — STUB yang sudah bekerja di DB. Sisa pekerjaan M1 (TS-02), dicari
-dengan ``TODO(TS-02)``:
-  1. Foto: validasi isi, buang EXIF, encode ulang JPEG ≤ 1 MB (FR-LAP-04, NFR-PRI-02, NFR-SEC-02).
-  2. Syarat transisi BR-03 di level domain (tingkat wajib, alasan wajib, induk aktif, banding sekali,
-     foto sesudah wajib bila konfigurasi aktif).
-  3. Visibilitas foto untuk petugas & admin; test lengkap.
+TS-02 selesai: foto dibersihkan di ``_foto.py`` (validasi isi, buang EXIF, JPEG ≤ 1 MB); syarat transisi
+BR-03 ditegakkan di ``_cek_syarat`` (siapa boleh apa ada di ``TRANSISI``); visibilitas BR-06 di
+``boleh_dilihat`` dan ``boleh_lihat_hasil_ai``.
 """
 
 from __future__ import annotations
@@ -20,6 +17,7 @@ from jalanku.core import (
     jarak_meter,
     koneksi,
     langganan,
+    pengaturan,
     sekarang,
     simpan_berkas,
     terbitkan,
@@ -27,6 +25,7 @@ from jalanku.core import (
 )
 from jalanku.modules.akun import PERAN_ADMIN, AkunDihapus, Pengguna
 
+from ._foto import bersihkan_foto
 from .tipe import (
     PELAKU_ADMIN,
     PELAKU_AI,
@@ -49,6 +48,9 @@ from .tipe import (
     LaporanDibuat,
     StatusBerubah,
 )
+
+MAKS_KETERANGAN = 280  # FR-LAP-01
+MIN_ALASAN = 5  # alasan penolakan Admin
 
 # BR-03: (dari, ke) → pelaku yang boleh. Status awal ditentukan di buat_laporan.
 TRANSISI: dict[tuple[str, str], set[str]] = {
@@ -96,11 +98,10 @@ def _ke_laporan(b: sqlite3.Row) -> Laporan:
     return Laporan(**data)
 
 
-def _simpan_foto(kon: sqlite3.Connection, laporan_id: int, jenis: str, data: bytes, hasil_ai: dict | None) -> None:
-    # TODO(TS-02): validasi isi file (Pillow), buang EXIF, encode ulang JPEG ≤ 1 MB sebelum disimpan.
-    if not data:
-        raise TidakValid("Foto kosong.")
-    nama = simpan_berkas(data, ".jpg")
+def _simpan_foto(kon: sqlite3.Connection, laporan_id: int, jenis: str, bersih: bytes, hasil_ai: dict | None) -> None:
+    """``bersih`` = hasil ``bersihkan_foto``; dibersihkan sebelum transaksi supaya foto tidak valid
+    menggagalkan seluruh laporan sebelum ada berkas yang ditulis."""
+    nama = simpan_berkas(bersih, ".jpg")
     kon.execute(
         "INSERT INTO laporan_foto (laporan_id, jenis, berkas, ai_json, dibuat_pada) VALUES (?, ?, ?, ?, ?)",
         (laporan_id, jenis, nama, json.dumps(hasil_ai) if hasil_ai else None, sekarang()),
@@ -125,6 +126,9 @@ def buat_laporan(data: LaporanBaru) -> Laporan:
         raise TidakValid("Laporan butuh 1 sampai 3 foto.")
     if data.keputusan_ai == "terverifikasi" and data.tingkat not in URUTAN_TINGKAT:
         raise TidakValid("Keputusan terverifikasi wajib menyertakan tingkat.")
+    if len(data.keterangan) > MAKS_KETERANGAN:
+        raise TidakValid(f"Keterangan maksimal {MAKS_KETERANGAN} karakter.")
+    bersih = [bersihkan_foto(f) for f in data.foto]
     if data.keputusan_ai == "terverifikasi":
         status, diperiksa, pelaku, catatan = STATUS_BELUM, PELAKU_AI, PELAKU_AI, "Diverifikasi oleh AI JalanKu"
     elif data.keputusan_ai == "ditolak":
@@ -157,7 +161,7 @@ def buat_laporan(data: LaporanBaru) -> Laporan:
                 data.instansi_id,
                 status,
                 data.tingkat if status == STATUS_BELUM else None,
-                data.keterangan[:280],
+                data.keterangan,
                 diperiksa,
                 data.keputusan_ai,
                 data.versi_model,
@@ -167,7 +171,7 @@ def buat_laporan(data: LaporanBaru) -> Laporan:
                 kini,
             ),
         )
-        for i, foto in enumerate(data.foto):
+        for i, foto in enumerate(bersih):
             _simpan_foto(kon, baru_id, "bukti", foto, data.hasil_ai[i] if i < len(data.hasil_ai) else None)
         _catat(kon, baru_id, None, status, pelaku, None, catatan)
     laporan = ambil_laporan(f"JK-{baru_id:05d}")
@@ -199,12 +203,31 @@ def _ambil_per_id(laporan_id: int) -> Laporan:
 
 
 def boleh_dilihat(laporan: Laporan, penonton: Pengguna | None) -> bool:
-    """BR-06. TODO(TS-02): aturan foto & petugas, test lengkap."""
+    """BR-06 (FR-LAP-03): berlaku untuk detail, timeline, dan berkas foto laporan.
+
+    - Status publik (belum/sedang dikerjakan, selesai, digabung): semua orang, termasuk pengunjung.
+    - Menunggu verifikasi & ditolak: hanya pelapornya dan Admin. Setelah akun pelapor dihapus
+      (``pelapor_id`` kosong), hanya Admin.
+    - Petugas tidak punya hak lihat tambahan; "laporan publik di wilayahnya" adalah aturan daftar
+      tugas di modul ``penanganan``, bukan aturan lihat detail.
+    Pemanggil yang menolak akses wajib menjawab 404 (bukan 403) agar keberadaan laporan tidak bocor.
+    """
     if laporan.status in STATUS_PUBLIK:
         return True
     if penonton is None:
         return False
-    return penonton.peran == PERAN_ADMIN or penonton.id == laporan.pelapor_id
+    if penonton.peran == PERAN_ADMIN:
+        return True
+    return laporan.pelapor_id is not None and penonton.id == laporan.pelapor_id
+
+
+def boleh_lihat_hasil_ai(laporan: Laporan, foto: Foto, penonton: Pengguna | None) -> bool:
+    """Hasil AI foto bukti hanya untuk pelapornya & Admin; hasil AI foto sesudah perbaikan publik (US-31)."""
+    if foto.jenis == "sesudah":
+        return True
+    if penonton is None:
+        return False
+    return penonton.peran == PERAN_ADMIN or (laporan.pelapor_id is not None and penonton.id == laporan.pelapor_id)
 
 
 def ambil_untuk_penonton(nomor: str, penonton: Pengguna | None) -> Laporan:
@@ -300,6 +323,47 @@ def timeline(laporan_id: int) -> list[EntriTimeline]:
 # --- Mengubah ----------------------------------------------------------------------------------
 
 
+def _cek_syarat(
+    laporan: Laporan,
+    ke: str,
+    *,
+    catatan: str,
+    tingkat: str | None,
+    induk_nomor: str | None,
+    foto_sesudah: bytes | None,
+) -> int | None:
+    """Syarat tambahan per transisi BR-03 (dipanggil setelah pelaku dinyatakan boleh).
+
+    Mengembalikan id laporan induk untuk transisi ke ``digabung``, selain itu ``None``.
+    Data kurang/salah → ``TidakValid`` (400); keadaan laporan tidak memungkinkan → ``Konflik`` (409).
+    """
+    if laporan.status == STATUS_MENUNGGU and ke == STATUS_BELUM and tingkat not in URUTAN_TINGKAT:
+        raise TidakValid("Pilih tingkat kerusakan: Kurang Baik atau Rusak.")
+    if ke == STATUS_DITOLAK and len(catatan) < MIN_ALASAN:
+        raise TidakValid(f"Alasan penolakan wajib diisi (minimal {MIN_ALASAN} karakter).")
+    if (
+        laporan.status == STATUS_DITOLAK
+        and ke == STATUS_MENUNGGU
+        and (laporan.diperiksa_oleh != PELAKU_AI or laporan.banding_pada is not None)
+    ):
+        raise Konflik("Peninjauan hanya bisa diminta sekali, untuk laporan yang ditolak otomatis oleh AI.")
+    if ke == STATUS_SELESAI and foto_sesudah is None and pengaturan().wajib_foto_selesai:
+        raise TidakValid("Lampirkan foto setelah perbaikan.")
+    if ke != STATUS_DIGABUNG:
+        return None
+    if not induk_nomor:
+        raise TidakValid("Pilih laporan induk untuk digabung.")
+    if induk_nomor == laporan.nomor:
+        raise TidakValid("Laporan tidak bisa digabung ke dirinya sendiri.")
+    try:
+        induk = ambil_laporan(induk_nomor)
+    except TidakDitemukan as e:
+        raise TidakValid("Laporan induk tidak ditemukan.") from e
+    if induk.status not in STATUS_AKTIF:
+        raise Konflik("Laporan induk harus masih aktif.")
+    return induk.id
+
+
 def ubah_status(
     nomor: str,
     ke: str,
@@ -319,10 +383,11 @@ def ubah_status(
     laporan = ambil_laporan(nomor)
     if pelaku not in TRANSISI.get((laporan.status, ke), set()):
         raise Konflik(f"Status tidak bisa diubah dari {laporan.status} ke {ke}.")
-    # TODO(TS-02): syarat per transisi (tingkat wajib saat verifikasi Admin, alasan wajib saat tolak,
-    #              induk aktif saat gabung, banding hanya sekali & hanya untuk penolakan AI,
-    #              foto sesudah wajib bila pengaturan().wajib_foto_selesai).
-    induk_id = ambil_laporan(induk_nomor).id if induk_nomor else None
+    catatan = catatan.strip()
+    induk_id = _cek_syarat(
+        laporan, ke, catatan=catatan, tingkat=tingkat, induk_nomor=induk_nomor, foto_sesudah=foto_sesudah
+    )
+    sesudah_bersih = bersihkan_foto(foto_sesudah) if foto_sesudah is not None else None
     kini = sekarang()
     set_kolom = {"status": ke, "diubah_pada": kini}
     if ke == STATUS_BELUM and laporan.status == STATUS_MENUNGGU:
@@ -344,8 +409,8 @@ def ubah_status(
             f"UPDATE laporan SET {', '.join(f'{k} = ?' for k in set_kolom)} WHERE id = ?",  # noqa: S608
             (*set_kolom.values(), laporan.id),
         )
-        if foto_sesudah is not None:
-            _simpan_foto(kon, laporan.id, "sesudah", foto_sesudah, hasil_ai_sesudah)
+        if sesudah_bersih is not None:
+            _simpan_foto(kon, laporan.id, "sesudah", sesudah_bersih, hasil_ai_sesudah)
         _catat(kon, laporan.id, laporan.status, ke, pelaku, pengguna_id, catatan)
     terbitkan(StatusBerubah(laporan.id, laporan.nomor, laporan.status, ke, pelaku, laporan.pelapor_id))
     return ambil_laporan(nomor)
