@@ -2820,6 +2820,25 @@
       }
     },
     "/api/notifikasi/pengaturan": {
+      "get": {
+        "operationId": "lihat_pengaturan_api_notifikasi_pengaturan_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PengaturanNotifikasi"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Status notifikasi pengguna ini",
+        "tags": [
+          "notifikasi"
+        ]
+      },
       "put": {
         "operationId": "pengaturan_notifikasi_api_notifikasi_pengaturan_put",
         "requestBody": {
