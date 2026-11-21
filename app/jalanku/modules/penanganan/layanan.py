@@ -8,7 +8,7 @@ dan perubahan status hanya lewat ``laporan.ubah_status`` (BR-03).
 
 from __future__ import annotations
 
-from jalanku.core import BelumDibuat, TidakBerhak, TidakValid, pengaturan
+from jalanku.core import BelumDibuat, TidakBerhak, TidakDitemukan, TidakValid, pengaturan
 from jalanku.modules.akun import Pengguna
 from jalanku.modules.laporan import (
     PELAKU_PETUGAS,
@@ -21,12 +21,13 @@ from jalanku.modules.laporan import (
     jumlah_dukungan,
     ubah_status,
 )
-from jalanku.modules.wilayah import boleh_menangani
+from jalanku.modules.wilayah import ID_DINAS, ambil_instansi, boleh_menangani
 
 STATUS_DASHBOARD = (STATUS_BELUM, STATUS_SEDANG, STATUS_SELESAI)
 STATUS_TUJUAN = (STATUS_SEDANG, STATUS_SELESAI)
 URUTAN = ("waktu", "prioritas")
-BATAS_DAFTAR = 2000
+BATAS_DAFTAR = 2000  # dipotong SETELAH filter wilayah dan urut waktu verifikasi
+BATAS_AMBIL = 100_000  # pengaman query; satu kota jauh di bawah angka ini
 PESAN_FOTO_WAJIB = "Lampirkan foto setelah perbaikan."
 
 
@@ -63,13 +64,21 @@ def daftar_laporan(pengguna: Pengguna, status: str | None = None, urut: str = "w
         raise TidakValid("Urutan tidak dikenal (pakai waktu atau prioritas).")
     if urut == "prioritas":
         raise BelumDibuat("US-20", "M6")
+    kota = None
+    if instansi_id != ID_DINAS:
+        try:
+            kota = ambil_instansi(instansi_id).kota
+        except TidakDitemukan:
+            return []
+    # Wilayah disaring di query dulu, baru diurutkan dan dipotong. Kalau batas dipasang di query
+    # lintas wilayah, laporan kota lain yang lebih baru bisa menghabiskan jatah (review PR #37).
     hasil = [
         lap
-        for lap in cari_laporan(status=status or STATUS_DASHBOARD, batas=BATAS_DAFTAR)
+        for lap in cari_laporan(status=status or STATUS_DASHBOARD, kota=kota, batas=BATAS_AMBIL)
         if boleh_menangani(instansi_id, lap.kota)
     ]
     hasil.sort(key=lambda lap: (lap.diverifikasi_pada or "", lap.id), reverse=True)
-    return [_ke_item(lap) for lap in hasil]
+    return [_ke_item(lap) for lap in hasil[:BATAS_DAFTAR]]
 
 
 def ubah_status_petugas(pengguna: Pengguna, nomor: str, ke: str, catatan: str = "", foto: bytes | None = None) -> dict:

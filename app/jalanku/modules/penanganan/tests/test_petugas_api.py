@@ -16,6 +16,7 @@ from PIL import Image
 from conftest import TITIK
 from jalanku.core import muat_ulang_pengaturan
 from jalanku.modules import laporan
+from jalanku.modules.penanganan import layanan as layanan_penanganan
 from jalanku.modules.penanganan.skema import ItemPetugasKeluaran
 
 URL = "/api/petugas/laporan"
@@ -113,6 +114,25 @@ def test_filter_status_dan_isi_item_sesuai_kontrak(petugas_jp, monas):
     assert item["diverifikasi_pada"] is not None
     assert item["skor_prioritas"] is None  # US-20 belum aktif
     assert "pelapor_id" not in item
+
+
+def test_batas_daftar_diterapkan_setelah_filter_wilayah(monkeypatch, petugas_js):
+    """Regresi review PR #37: Given 1 laporan Jakarta Selatan dan laporan Jakarta Pusat yang lebih baru
+    melebihi batas daftar, when petugas SUDIN_JS membuka dashboard, then laporan Selatan tetap tampil."""
+    monkeypatch.setattr(layanan_penanganan, "BATAS_DAFTAR", 3)
+    selatan = _buat("blok_m", "Jakarta Selatan", "SUDIN_JS")
+    for _ in range(4):
+        _buat("monas", "Jakarta Pusat", "SUDIN_JP")
+    assert _nomor(petugas_js) == {selatan.nomor}
+
+
+def test_batas_daftar_menyisakan_laporan_terverifikasi_terbaru(monkeypatch, petugas_js):
+    """Given 3 laporan di wilayah petugas dan batas daftar 2, then yang tampil 2 laporan terverifikasi terbaru."""
+    monkeypatch.setattr(layanan_penanganan, "BATAS_DAFTAR", 2)
+    dibuat = [_buat("blok_m", "Jakarta Selatan", "SUDIN_JS") for _ in range(3)]
+    r = petugas_js.get(URL)
+    assert r.status_code == 200, r.text
+    assert [x["nomor"] for x in r.json()] == [dibuat[2].nomor, dibuat[1].nomor]
 
 
 def test_parameter_tidak_dikenal_ditolak(petugas_jp):
