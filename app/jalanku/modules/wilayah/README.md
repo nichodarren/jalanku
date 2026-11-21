@@ -15,7 +15,7 @@
 
 Hanya nama di `__all__` pada [`__init__.py`](__init__.py). Tanda tangan terkunci di `app/kontrak/modul.json`; endpoint di `app/kontrak/openapi.json` (lihat juga `/api/docs` saat server jalan). Mengubah yang sudah ada = change request (issue template *Change request*); menambah sesuatu yang opsional cukup PR biasa + `python -m jalanku kontrak --tulis`.
 
-## Penentuan Sudin (US-07)
+## Menyiapkan data wilayah lokal (TS-04)
 
 Dari `app/`, setelah memasang dependency, siapkan data satu kali per checkout atau runner CI:
 
@@ -30,6 +30,23 @@ saat setup, menjalankan aplikasi, dan menguji. Aplikasi dapat memakai hasil setu
 Ulangi perintah jika berkas hilang atau rusak. Simpan data hanya untuk penggunaan lokal
 atau pengujian akademik di runner. Jangan commit GeoJSON atau mengunggahnya sebagai artifact CI.
 
+Jika arsip sudah tersedia, konverter juga bisa dijalankan secara manual dari `Indonesia_subdistricts.geojson` dari [arsip sumber pada revisi yang diuji](https://github.com/fahadh4ilyas/indonesia-geojson-archive/blob/5925720d5cb627680d9245c5953e13a401077e01/Indonesia_subdistricts.geojson).
+Batas wilayah bersumber dari GADM. [Lisensi GADM](https://gadm.org/license.html) mengizinkan penggunaan akademik dan mensyaratkan izin untuk redistribusi.
+Simpan arsip sumber di luar repo. Jika memakai `JALANKU_DATA`, sesuaikan juga path tujuan pada contoh berikut.
+
+Dari folder `app/`, jalankan perintah berikut setelah menyesuaikan path sumber:
+
+```bash
+python -m jalanku.modules.wilayah.data.siapkan_wilayah ../../Indonesia_subdistricts.geojson var/wilayah-dki-jakarta.geojson
+python -m pytest jalanku/modules/wilayah/tests/test_data_wilayah.py
+```
+
+Script diport dari karya Yosua, `jalanku-v0@65db419:app/scripts/siapkan_wilayah.py`. Script menyaring lima kota daratan,
+menormalkan ejaan, dan menggabungkan poligon per kecamatan. Hasil lokal berupa GeoJSON dengan 42 fitur dan properti
+`kota` serta `kecamatan`. Data Sudin tersedia dari migrasi `migrasi/001_awal.sql` melalui `daftar_instansi()`.
+
+## Penentuan Sudin (US-07)
+
 Panggil `tentukan_wilayah(lat, lon)` lewat antarmuka publik. Titik di dalam poligon menghasilkan kecamatan, kota,
 dan Sudin kota itu. Titik luar menghasilkan `HasilWilayah(False, None, None, None)`. Jika dua kecamatan mencakup
 titik persis di batas bersama, urutan alfabetis pasangan kota/kecamatan menentukan hasilnya.
@@ -41,7 +58,7 @@ Data hilang atau rusak menghasilkan galat 503. Perubahan kanal instansi dijadwal
 
 ## Pekerjaan
 
-- [ ] TS-04: port `scripts/siapkan_wilayah.py` + `wilayah-dki-jakarta.geojson` (42 kecamatan, GADM) dari jalanku-v0 branch `trial/mvp-v2` ke `modules/wilayah/data/`; cek syarat lisensi GADM & atribusi
+- [x] TS-04: siapkan batas 42 kecamatan dan verifikasi pemetaan lima kota ke Sudin.
 - [x] US-07: tentukan kecamatan dan Sudin dengan Shapely STRtree dan sajikan batas di endpoint wilayah.
 - [ ] US-08: di luar → `KANAL_LUAR_WILAYAH` (SP4N-LAPOR!)
 - [x] NFR-FUN-01: test 3 titik per kota + 5 titik luar cakupan di `tests/test_wilayah.py`.
@@ -53,7 +70,6 @@ Data hilang atau rusak menghasilkan galat 503. Perubahan kanal instansi dijadwal
 
 ```bash
 cd app
-python -m jalanku.modules.wilayah.data.setup_wilayah
 python -m pytest jalanku/modules/wilayah     # test modul ini saja
 python -m pytest tests/arsitektur        # batas modul & kontrak
 python -m jalanku contoh-data            # data SIMULASI di DB lokal

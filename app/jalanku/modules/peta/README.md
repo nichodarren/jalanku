@@ -17,14 +17,14 @@ Hanya nama di `__all__` pada [`__init__.py`](__init__.py). Tanda tangan terkunci
 
 ## Status stub (baseline 19 Nov 2026)
 
-`GET /api/peta` sudah bekerja (mode aktif & riwayat, filter kota/tingkat multi-nilai dipisah koma, tanpa identitas pelapor). Frontend masih peta dasar Leaflet + atribusi.
+`GET /api/peta` sudah bekerja (mode aktif & riwayat, filter kota/tingkat multi-nilai dipisah koma, tanpa identitas pelapor). Frontend `#/peta` dan `#/riwayat` menampilkan bubble berkelompok (Leaflet.markercluster), filter, legenda, dan penanda SIMULASI.
 
 ## Pekerjaan
 
 - [x] US-15: endpoint data bubble `GET /api/peta` (tanpa pelapor_id); test di `tests/test_peta_api.py`
-- [ ] US-15: frontend markercluster, warna per tingkat, ukuran ikut zoom, animasi pop yang menghormati prefers-reduced-motion
+- [x] US-15: frontend markercluster, warna per tingkat, ukuran ikut zoom, animasi pop yang menghormati prefers-reduced-motion (`web/modules/peta/`, penjaga statis di `tests/test_peta_web.py`)
 - [x] US-16 (backend): `mode=riwayat` mengembalikan status Selesai
-- [ ] US-16 (frontend): rute `#/riwayat`, warna hijau
+- [x] US-16 (frontend): rute `#/riwayat`, warna hijau
 - [ ] Pakai `python -m jalanku contoh-data` (data SIMULASI) selama modul pelaporan belum selesai
 
 ## Cara kerja di modul ini
