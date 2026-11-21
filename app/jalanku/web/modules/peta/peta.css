@@ -1,0 +1,103 @@
+/* Gaya modul peta (US-15, US-16). Pemilik: M6.
+   Warna memakai token di shared/gaya.css. Tanpa atribut style= di JS (CSP style-src 'self'):
+   warna lewat kelas, skala bubble lewat variabel --skala-bubble yang diatur dengan CSSOM. */
+
+.pilih-mode { display: flex; gap: 4px; margin-bottom: 8px; }
+.tab-mode {
+  flex: 1; min-height: var(--sentuh-min); display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--warna-garis); border-radius: 8px; background: var(--warna-kartu);
+  text-decoration: none; font-weight: 600;
+}
+.tab-mode.aktif { background: var(--warna-utama); border-color: var(--warna-utama); color: #fff; }
+
+.panel-filter { margin-bottom: 8px; }
+.panel-filter summary { padding: 12px 0; cursor: pointer; font-weight: 600; } /* tanpa display:flex agar penanda buka/tutup tetap tampil */
+.grup-chip { border: 0; margin: 0 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.grup-chip legend { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; padding: 0; }
+.chip {
+  background: var(--warna-kartu); color: var(--warna-teks); border: 1px solid var(--warna-garis);
+  border-radius: 999px; padding: 8px 14px; font-size: 0.9rem;
+}
+.chip[aria-pressed="true"] { background: var(--warna-utama); border-color: var(--warna-utama); color: #fff; }
+
+.ringkasan-peta { margin: 4px 0 8px; font-weight: 600; }
+.catatan-simulasi {
+  margin: 0 0 8px; padding: 8px 12px; border: 1px dashed var(--warna-redup); border-radius: 8px;
+  color: var(--warna-redup); font-size: 0.9rem;
+}
+
+.peta-laporan { --skala-bubble: 1; }
+
+/* Bubble laporan: lingkaran + ekor, ujung ekor = titik laporan (iconAnchor 20,46) */
+.bubble-wrap { background: none; border: 0; }
+.bubble {
+  --warna: var(--warna-redup);
+  position: relative; width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--warna); border: 2px solid #fff; box-shadow: 0 2px 6px rgb(0 0 0 / 35%);
+  transform-origin: 50% 115%; transform: scale(var(--skala-bubble));
+  animation: bubble-pop 280ms ease-out;
+}
+.bubble::after {
+  content: ""; position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%);
+  border: 7px solid transparent; border-bottom: 0; border-top-color: var(--warna);
+}
+.bubble.rusak { --warna: var(--warna-rusak); }
+.bubble.kurang-baik { --warna: var(--warna-kurang-baik); }
+.bubble.selesai { --warna: var(--warna-selesai); }
+.bubble.sedang { outline: 3px dashed var(--warna-dikerjakan); outline-offset: 2px; }
+.bubble.simulasi { border-style: dashed; border-color: #e0e0e0; }
+
+@keyframes bubble-pop {
+  0% { transform: scale(0); }
+  70% { transform: scale(calc(var(--skala-bubble) * 1.15)); }
+  100% { transform: scale(var(--skala-bubble)); }
+}
+
+/* Cluster berangka: warna = laporan terparah di dalamnya */
+.bubble-cluster {
+  --warna: var(--warna-selesai);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: var(--warna); color: #fff; font-weight: 700; border: 3px solid rgb(255 255 255 / 85%);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 35%); animation: cluster-pop 280ms ease-out;
+}
+.bubble-cluster.rusak { --warna: var(--warna-rusak); }
+.bubble-cluster.kurang-baik { --warna: var(--warna-kurang-baik); color: var(--warna-teks); } /* putih di oranye cuma 3,08:1 */
+.bubble-cluster.selesai { --warna: var(--warna-selesai); }
+.bubble-cluster.kecil { width: 36px; height: 36px; font-size: 0.85rem; }
+.bubble-cluster.menengah { width: 44px; height: 44px; font-size: 0.95rem; }
+.bubble-cluster.besar { width: 56px; height: 56px; font-size: 1.05rem; }
+
+@keyframes cluster-pop {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+/* Batas kecamatan tipis */
+.batas-kecamatan { stroke: var(--warna-teks); stroke-opacity: 0.45; stroke-dasharray: 4 4; }
+
+/* Popup */
+.popup-laporan p { margin: 0 0 6px; }
+.popup-nomor { font-weight: 700; display: flex; gap: 6px; align-items: center; }
+.lencana { display: inline-block; padding: 2px 8px; border-radius: 999px; color: #fff; font-size: 0.85rem; font-weight: 600; }
+.lencana.rusak { background: var(--warna-rusak); }
+.lencana.kurang-baik { background: var(--warna-kurang-baik); color: var(--warna-teks); } /* 5,38:1 (WCAG AA) */
+.lencana.selesai { background: var(--warna-selesai); }
+.lencana-simulasi {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; padding: 1px 6px;
+  border: 1px dashed var(--warna-redup); border-radius: 4px; color: var(--warna-redup);
+}
+
+/* Legenda */
+.legenda-peta { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 8px 0 0; padding: 0; font-size: 0.9rem; }
+.legenda-peta li { display: flex; align-items: center; gap: 6px; }
+.tanda { width: 14px; height: 14px; border-radius: 50%; display: inline-block; background: var(--warna-redup); }
+.tanda.rusak { background: var(--warna-rusak); }
+.tanda.kurang-baik { background: var(--warna-kurang-baik); }
+.tanda.selesai { background: var(--warna-selesai); }
+.tanda.sedang { background: transparent; border: 2px dashed var(--warna-dikerjakan); }
+.tanda.simulasi { background: transparent; border: 2px dashed var(--warna-redup); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble, .bubble-cluster { animation: none; }
+}
