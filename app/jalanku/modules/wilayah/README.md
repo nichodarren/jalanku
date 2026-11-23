@@ -60,7 +60,10 @@ Data hilang atau rusak menghasilkan galat 503. Perubahan kanal instansi dijadwal
 
 - [x] TS-04: siapkan batas 42 kecamatan dan verifikasi pemetaan lima kota ke Sudin.
 - [x] US-07: tentukan kecamatan dan Sudin dengan Shapely STRtree dan sajikan batas di endpoint wilayah.
-- [ ] US-08: di luar → `KANAL_LUAR_WILAYAH` (SP4N-LAPOR!)
+- [ ] US-08: uji alur luar cakupan bersama M3 untuk menyelesaikan [issue #15](https://github.com/nichodarren/jalanku/issues/15).
+  - [x] M2: untuk titik Kota Tangerang, `tentukan_wilayah` mengembalikan `di_dalam=False` tanpa Sudin.
+    Modul pelaporan dapat mengambil pasangan nama dan URL SP4N-LAPOR! dari `wilayah.KANAL_LUAR_WILAYAH`.
+  - [ ] M3 bersama M2: pastikan warga melihat alasan dan tautan kanal di form, serta server menolak pengiriman tanpa membuat laporan.
 - [x] NFR-FUN-01: test 3 titik per kota + 5 titik luar cakupan di `tests/test_wilayah.py`.
   Dari `app/`, jalankan `python -m pytest jalanku/modules/wilayah/tests/test_wilayah.py -k titik_nyata -v`.
   Semua 20 kasus wajib berjalan. Jika setup belum dilakukan, pytest gagal dengan petunjuk setup.
