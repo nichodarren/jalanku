@@ -62,7 +62,7 @@ function formSelesai(lap, setelahBerhasil) {
   const id = `foto-${lap.nomor}`;
   const pesan = el("p", { class: "galat", role: "alert", hidden: true });
   const inputFoto = el("input", { id, type: "file", name: "foto", accept: "image/*", capture: "environment" });
-  const inputCatatan = el("textarea", { id: `catatan-${lap.nomor}`, name: "catatan", rows: "2", maxlength: "500" });
+  const inputCatatan = el("textarea", { id: `catatan-${lap.nomor}`, name: "catatan", rows: "2", maxlength: "200" });
   const tombol = el("button", { type: "submit", class: "tombol utama" }, "Kirim, tandai Selesai");
   const form = el(
     "form",
@@ -85,7 +85,7 @@ function formSelesai(lap, setelahBerhasil) {
     },
     el("label", { for: id }, "Foto setelah perbaikan"),
     inputFoto,
-    el("label", { for: `catatan-${lap.nomor}` }, "Catatan (opsional)"),
+    el("label", { for: `catatan-${lap.nomor}` }, "Catatan (opsional, maks. 200 karakter)"),
     inputCatatan,
     pesan,
     el(

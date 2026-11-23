@@ -92,3 +92,13 @@ def test_css_tombol_sentuh_dan_reduced_motion():
     css = _baca("penanganan.css")
     assert "var(--sentuh-min)" in css
     assert "@media (prefers-reduced-motion: reduce)" in css
+
+
+def test_batas_catatan_di_form_sama_dengan_api(klien):
+    # Review #40 (Neilson): form dulu mengizinkan 500 karakter, API menolak di atas 200 dengan 422 yang terlalu umum.
+    skema = klien.get("/api/openapi.json").json()["components"]["schemas"]
+    form = [s["properties"]["catatan"] for s in skema.values() if "catatan" in s.get("properties", {})]
+    batas_api = form[0]["maxLength"]
+    kode = _baca("index.js")
+    assert re.findall(r'name: "catatan", rows: "2", maxlength: "(\d+)"', kode) == [str(batas_api)]
+    assert f'"Catatan (opsional, maks. {batas_api} karakter)"' in kode
