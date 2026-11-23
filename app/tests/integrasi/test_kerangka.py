@@ -2,9 +2,39 @@
 
 from __future__ import annotations
 
+import pytest
+from fastapi import Depends
 from fastapi.testclient import TestClient
 
-from jalanku.core import jalankan_migrasi, muat_ulang_pengaturan
+from jalanku.core import BelumDibuat, jalankan_migrasi, muat_ulang_pengaturan
+from jalanku.modules.akun import Pengguna, wajib_peran
+
+# Route khusus test, supaya test mekanisme stub (501) & cek peran tidak bergantung pada modul mana
+# yang kebetulan masih stub; kalau tidak, test ini patah setiap ada fitur yang selesai.
+JALUR_STUB = "/api/_uji/stub"
+JALUR_ADMIN = "/api/_uji/khusus-admin"
+
+
+@pytest.fixture
+def app():
+    from jalanku.main import buat_app
+
+    aplikasi = buat_app()
+
+    def stub():
+        raise BelumDibuat("US-00", "M1")
+
+    def khusus_admin(pengguna: Pengguna = Depends(wajib_peran("admin"))) -> dict:
+        return {"peran": pengguna.peran}
+
+    jumlah = len(aplikasi.router.routes)
+    aplikasi.add_api_route(JALUR_STUB, stub, methods=["GET"])
+    aplikasi.add_api_route(JALUR_ADMIN, khusus_admin, methods=["GET"])
+    # Taruh di depan: buat_app memasang berkas statis di "/" paling akhir, yang menangkap semua jalur.
+    baru = aplikasi.router.routes[jumlah:]
+    del aplikasi.router.routes[jumlah:]
+    aplikasi.router.routes[0:0] = baru
+    return aplikasi
 
 
 def test_kesehatan(klien):
@@ -34,11 +64,9 @@ def test_csrf_wajib_untuk_request_mengubah(app):
 
 
 def test_stub_mengembalikan_501_dengan_pesan(klien):
-    r = klien.post(
-        "/api/akun/daftar", json={"nama": "A", "email": "a@uji.test", "password": "rahasia123", "setuju_privasi": True}
-    )
+    r = klien.get(JALUR_STUB)
     assert r.status_code == 501
-    assert "belum dibuat" in r.json()["detail"]
+    assert r.json()["detail"] == "Fitur ini belum dibuat (US-00, pemilik M1)."
 
 
 def test_masuk_dev_dan_sesi(buat_klien):
@@ -50,9 +78,12 @@ def test_masuk_dev_dan_sesi(buat_klien):
 
 
 def test_peran_dicek_di_server(buat_klien, klien):
-    assert klien.get("/api/admin/antrean").status_code == 401
-    assert buat_klien("pelapor").get("/api/admin/antrean").status_code == 403
-    assert buat_klien("admin").get("/api/admin/antrean").status_code == 501  # lolos otorisasi, fitur belum dibuat
+    assert klien.get(JALUR_ADMIN).status_code == 401
+    assert buat_klien("pelapor").get(JALUR_ADMIN).status_code == 403
+    assert buat_klien("petugas", instansi_id="SUDIN_JP").get(JALUR_ADMIN).status_code == 403
+    r = buat_klien("admin").get(JALUR_ADMIN)
+    assert r.status_code == 200
+    assert r.json() == {"peran": "admin"}
 
 
 def test_masuk_dev_tidak_ada_di_produksi(monkeypatch):
