@@ -21,3 +21,5 @@ Each release PR moves entries from **Unreleased** into a new version section; ca
 
 ### Security
 - Report photos are validated by content (JPEG/PNG/WebP only, max 10 MB), re-encoded as JPEG ≤ 1 MB, and stripped of all EXIF metadata including GPS before storage (TS-02).
+- Photos of non-public reports (awaiting verification, rejected) are served with `Cache-Control: private, no-store`; photos of public reports with `public, max-age=86400` (BR-06, TS-02).
+- Report visibility (BR-06) is covered by a full status × viewer test matrix for details, photos and AI results; a report whose reporter account was deleted is visible only to Admin (TS-02).
