@@ -5,6 +5,7 @@ Tidak ada test yang menghubungi OSM sungguhan: pengunduh selalu diganti.
 
 from __future__ import annotations
 
+import contextlib
 import os
 import threading
 import time
@@ -278,3 +279,13 @@ def test_unduhan_ke_osm_dibatasi_global_walau_tiap_klien_masih_di_bawah_jatah():
     with pytest.raises(TerlaluBanyak):
         t.ambil(19, 417000 + n, 271155, klien="10.0.9.9", unduh=lambda *a: PNG)  # klien baru pun ditolak
     assert t.MAKS_UNDUH_PER_MENIT < t.MAKS_UNDUH_GLOBAL_PER_MENIT
+
+
+def test_satu_klien_nakal_tidak_menghabiskan_jatah_global():
+    # Review #39 (Yosua): permintaan yang ditolak batas per klien tidak boleh ikut memakai jatah global (DoS).
+    n = 0
+    for _ in range(t.MAKS_UNDUH_GLOBAL_PER_MENIT):
+        with contextlib.suppress(TerlaluBanyak):
+            t.ambil(19, 417000 + n, 271155, klien="6.6.6.6", unduh=lambda *a: PNG)
+        n += 1
+    assert t.ambil(19, 417000 + n, 271155, klien="10.1.1.1", unduh=lambda *a: PNG) == PNG

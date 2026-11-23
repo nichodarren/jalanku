@@ -100,8 +100,10 @@ def ambil(z: int, x: int, y: int, *, klien: str = "-", unduh: Pengunduh | None =
         lama = jalur.read_bytes()
         if time.time() - jalur.stat().st_mtime < UMUR_CACHE_DETIK:
             return lama
-    batasi("tile:semua", MAKS_UNDUH_GLOBAL_PER_MENIT, 60, "Peta sedang ramai. Coba lagi sebentar.")
+    # Per klien DULU: permintaan yang ditolak batas per klien tidak boleh ikut memakai jatah global,
+    # kalau tidak satu klien nakal bisa membuat peta 429 untuk semua orang (review #39).
     batasi(f"tile:{klien}", MAKS_UNDUH_PER_MENIT, 60, "Terlalu banyak permintaan peta. Coba lagi sebentar.")
+    batasi("tile:semua", MAKS_UNDUH_GLOBAL_PER_MENIT, 60, "Peta sedang ramai. Coba lagi sebentar.")
     try:
         data = (unduh or unduh_osm)(z, x, y)
     except (urllib.error.URLError, TimeoutError, OSError):
