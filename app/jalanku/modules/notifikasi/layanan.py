@@ -27,6 +27,10 @@ from jalanku.modules.laporan import (
 
 BATAS_DAFTAR = 100
 
+# BR-06: laporan Ditolak hanya terlihat pelapornya dan Admin. Pendukung (boleh mendukung laporan yang masih
+# menunggu verifikasi, BR-02) tidak dikabari penolakan: tautan "lihat alasannya" akan 404.
+HANYA_PELAPOR = {STATUS_DITOLAK}
+
 PESAN = {
     STATUS_BELUM: "Laporan {nomor} sudah diverifikasi dan diteruskan ke Sudin Bina Marga.",
     STATUS_SEDANG: "Laporan {nomor} sedang dikerjakan petugas.",
@@ -103,7 +107,7 @@ def tandai_dibaca(pengguna_id: int, kabar_id: int) -> Kabar | None:
 
 
 def _saat_status_berubah(kejadian: StatusBerubah) -> None:
-    penerima = set(pendukung(kejadian.laporan_id))
+    penerima = set() if kejadian.ke_status in HANYA_PELAPOR else set(pendukung(kejadian.laporan_id))
     if kejadian.pelapor_id is not None:
         penerima.add(kejadian.pelapor_id)
     if kejadian.pelaku == PELAKU_PELAPOR:

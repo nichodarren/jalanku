@@ -84,6 +84,25 @@ def test_verifikasi_dan_penolakan_admin_dikabarkan_ke_pelapor():
     assert "ditolak" in _pesan(4)[0]
 
 
+def test_pendukung_laporan_menunggu_tidak_dikabari_saat_ditolak_admin():
+    """BR-06: laporan Ditolak hanya terlihat pelapornya dan Admin, jadi pendukung (boleh mendukung laporan
+    yang masih menunggu, BR-02) tidak diberi kabar dengan tautan yang akan 404. Pelapor tetap dikabari."""
+    lap = _buat(pelapor_id=1, keputusan="perlu_admin")
+    L.tambah_dukungan(lap.id, 2)
+    L.ubah_status(lap.nomor, L.STATUS_DITOLAK, L.PELAKU_ADMIN, pengguna_id=9, catatan="Bukan foto jalan")
+    assert "ditolak" in _pesan(1)[0]
+    assert N.daftar_kabar(2) == []
+
+
+def test_pendukung_tetap_dikabari_saat_laporan_menunggu_diverifikasi_admin():
+    """Setelah diverifikasi, laporan publik (BR-06), jadi pendukung boleh tahu."""
+    lap = _buat(pelapor_id=1, keputusan="perlu_admin")
+    L.tambah_dukungan(lap.id, 2)
+    L.ubah_status(lap.nomor, L.STATUS_BELUM, L.PELAKU_ADMIN, pengguna_id=9, tingkat=L.TINGKAT_RUSAK)
+    assert "diteruskan" in _pesan(1)[0]
+    assert "diteruskan" in _pesan(2)[0]
+
+
 def test_pelapor_tidak_dikabari_tindakannya_sendiri():
     # Banding diajukan pelapor sendiri: ia tidak perlu kabar "laporanmu menunggu verifikasi".
     lap = _buat(keputusan="ditolak")
