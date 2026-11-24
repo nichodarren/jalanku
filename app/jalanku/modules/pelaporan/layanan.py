@@ -13,17 +13,20 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 
-from jalanku.core import TidakValid, batasi
+from jalanku.core import Konflik, TidakValid, batasi
 from jalanku.modules.ai import periksa_foto, putuskan
 from jalanku.modules.akun import Pengguna
 from jalanku.modules.laporan import (
+    STATUS_AKTIF,
     STATUS_BELUM,
     STATUS_DITOLAK,
     Laporan,
     LaporanBaru,
+    ambil_laporan,
     buat_laporan,
     cari_aktif_dekat,
     jumlah_dukungan,
+    tambah_dukungan,
 )
 from jalanku.modules.wilayah import KANAL_LUAR_WILAYAH, HasilWilayah, Instansi, tentukan_wilayah
 
@@ -33,6 +36,7 @@ MAKS_FOTO = 3
 MAKS_BYTE_FOTO = 10 * 1024 * 1024
 MAKS_KETERANGAN = 280
 BATAS_LAPORAN_PER_JAM = 10
+BATAS_DUKUNG_PER_JAM = 60
 JENDELA_DETIK = 3600
 RADIUS_DUPLIKAT_M = 25
 AKURASI_PIN_MAKS_M = 50  # BR-01 c: lebih buruk dari ini → minta konfirmasi pin
@@ -117,6 +121,30 @@ def pratinjau_lokasi(lat: float, lon: float, akurasi_gps: float | None = None) -
         return PratinjauLokasi(wilayah, False, KANAL_LUAR_WILAYAH, [])
     perlu_pin = akurasi_gps is not None and akurasi_gps > AKURASI_PIN_MAKS_M
     return PratinjauLokasi(wilayah, perlu_pin, None, cari_kandidat_duplikat(lat, lon))
+
+
+@dataclass(frozen=True)
+class HasilDukung:
+    nomor: str
+    jumlah_dukungan: int
+    baru: bool
+
+
+def dukung_laporan(pengguna: Pengguna, nomor: str) -> HasilDukung:
+    """FR-PEL-06: "saya juga mengalami". Satu dukungan per akun per laporan.
+
+    Laporan yang boleh didukung = laporan aktif (BR-02, termasuk yang menunggu verifikasi, karena
+    tawaran dukung dari ``pratinjau_lokasi`` bisa menunjuknya). Diport dari jalanku-v0@65db419
+    ``reports.py`` ``dukung`` (karya Yosua); hitungan dukungan lewat SQL diganti antarmuka publik laporan.
+    """
+    lap = ambil_laporan(nomor)  # 404 bila tidak ada
+    if lap.status not in STATUS_AKTIF:
+        raise Konflik("Laporan ini tidak bisa didukung (sudah selesai, ditolak, atau digabung).")
+    if lap.pelapor_id == pengguna.id:
+        raise Konflik("Ini laporanmu sendiri.")
+    batasi(f"dukung:{pengguna.id}", BATAS_DUKUNG_PER_JAM, JENDELA_DETIK, "Batas 60 dukungan per jam tercapai.")
+    baru = tambah_dukungan(lap.id, pengguna.id)
+    return HasilDukung(lap.nomor, jumlah_dukungan(lap.id), baru)
 
 
 def _pesan(laporan: Laporan, instansi: Instansi) -> str:
