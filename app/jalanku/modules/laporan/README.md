@@ -15,6 +15,12 @@
 
 Hanya nama di `__all__` pada [`__init__.py`](__init__.py). Tanda tangan terkunci di `app/kontrak/modul.json`; endpoint di `app/kontrak/openapi.json` (lihat juga `/api/docs` saat server jalan). Mengubah yang sudah ada = change request (issue template *Change request*); menambah sesuatu yang opsional cukup PR biasa + `python -m jalanku kontrak --tulis`.
 
+## Dukungan
+
+- `tambah_dukungan` (1 per akun per laporan), `jumlah_dukungan`, `pendukung`.
+- `jumlah_dukungan_massal(laporan_ids) -> dict[int, int]`: hitung banyak laporan sekaligus dengan `GROUP BY` (CR #23, untuk `GET /api/peta`). Id tanpa dukungan → 0.
+- **Saat digabung** (`ubah_status(..., STATUS_DIGABUNG, induk_nomor=...)`): pendukung laporan anak dan pelapornya otomatis menjadi pendukung induk, di dalam transaksi yang sama (port `reports.py` `gabung` jalanku-v0). Dukungan lama induk tidak ditimpa, dan pelapor induk tidak pernah tercatat mendukung laporannya sendiri. Pemanggil (moderasi) tidak perlu melakukan apa-apa.
+
 ## Status stub (baseline 19 Nov 2026)
 
 Sudah bekerja di DB: buat, ambil, cari, transisi BR-03 per pelaku, timeline, dukungan, detail publik, berkas foto. TS-02 selesai: foto dibersihkan sebelum disimpan (`_foto.py`); syarat transisi BR-03 lengkap (`_cek_syarat`; data kurang → 400, keadaan tidak memungkinkan → 409); visibilitas BR-06 lengkap dengan test, foto laporan privat dikirim `Cache-Control: private, no-store`. Cari `TODO(` di folder ini untuk sisa pekerjaan.
