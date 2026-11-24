@@ -28,12 +28,12 @@ kartu di board  →  branch dari main  →  commit kecil  →  PR  →  CI hijau
    test(ai): kasus confidence tepat di batas 0,80 (US-06)
    fix(laporan): tolak transisi selesai → sedang (TS-02)
    ```
-4. **Sebelum push**, dari folder `app/`:
+4. **Sebelum push**, dari folder `app/` (pertama kali di laptop baru: `python -m jalanku.modules.wilayah.data.setup_wilayah`, lihat `app/README.md`):
    ```bash
    ruff check --fix . && ruff format .
    python -m pytest
    ```
-5. **Buka PR** ke `main` dengan template yang tersedia. Tautkan issue (`Menutup #12`).
+5. **Buka PR** ke `main` dengan template yang tersedia. Tautkan issue dengan kata kunci GitHub **`Closes #12`** (harus bahasa Inggris: `Closes`/`Fixes`; tulisan `Menutup #12` tidak menutup issue otomatis saat PR di-merge).
 6. **Review**: pemilik modul terkait (otomatis dari CODEOWNERS) + pasangan review-mu. Reviewer menjawab ≤ 48 jam (lihat *Panduan review* di bawah).
 7. **Merge**: *Squash and merge* setelah CI hijau + ≥ 1 approve. Penulis PR yang menekan merge, lalu hapus branch.
 

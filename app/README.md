@@ -13,7 +13,10 @@ python -m venv .venv
 # Windows: .venv\Scripts\activate      macOS/Linux: source .venv/bin/activate
 pip install -r requirements.lock        # versi PERSIS yang sama untuk semua anggota
 pip install -e . --no-deps
+python -m jalanku.modules.wilayah.data.setup_wilayah   # sekali: batas 42 kecamatan → var/
 ```
+
+Langkah terakhir mengunduh batas kecamatan (GADM, dikunci SHA-256) ke `app/var/wilayah-dki-jakarta.geojson`. Data ini **tidak ikut repo** karena lisensi GADM melarang redistribusi; tanpa data ini penentuan Sudin, `contoh-data`, dan 20 test titik nyata wilayah tidak jalan. CI menyiapkannya otomatis. Ulangi bila folder `app/var/` dihapus.
 
 ## Jalankan
 
@@ -71,6 +74,7 @@ Lihat [`.env.example`](.env.example). Di produksi wajib: `JALANKU_MODE=prod`, `J
 |---|---|
 | `test_kontrak_cocok_dengan_snapshot` gagal | Kamu mengubah endpoint/skema/antarmuka publik. Lihat docstring test itu |
 | `test_modul_hanya_memakai_antarmuka_publik` gagal | Kamu mengimpor isi dalam modul lain, atau modul yang tidak diizinkan. Pakai `from jalanku.modules.<modul> import ...` |
+| `test_titik_nyata` error "…wilayah-dki-jakarta.geojson belum tersedia", atau `contoh-data` berhenti dengan "Data contoh belum dibuat" | Data batas kecamatan belum disiapkan. Dari `app/`: `python -m jalanku.modules.wilayah.data.setup_wilayah` |
 | Endpoint menjawab 501 | Fiturnya belum dibuat (stub). Pesan menyebut story & pemiliknya |
 | Request POST dari JS ditolak 403 | Pakai `api.post()` dari `/shared/api.js` (menambah header `X-JalanKu: 1`) |
 | Inline style tidak jalan | CSP melarangnya. Pakai kelas CSS |
