@@ -84,7 +84,7 @@ async function tampilkan() {
   } catch (galat) {
     wadah.append(el("p", { class: "galat", role: "alert" }, galat.message || String(galat)));
   }
-  wadah.focus();
+  wadah.focus({ preventScroll: true }); // fokus untuk pembaca layar tanpa membuat halaman melompat
 }
 
 window.addEventListener("hashchange", tampilkan);
