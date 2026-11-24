@@ -25,7 +25,7 @@ from jalanku.modules.laporan import (
     cari_aktif_dekat,
     jumlah_dukungan,
 )
-from jalanku.modules.wilayah import KANAL_LUAR_WILAYAH, Instansi, tentukan_wilayah
+from jalanku.modules.wilayah import KANAL_LUAR_WILAYAH, HasilWilayah, Instansi, tentukan_wilayah
 
 log = logging.getLogger("jalanku.pelaporan")
 
@@ -35,6 +35,7 @@ MAKS_KETERANGAN = 280
 BATAS_LAPORAN_PER_JAM = 10
 JENDELA_DETIK = 3600
 RADIUS_DUPLIKAT_M = 25
+AKURASI_PIN_MAKS_M = 50  # BR-01 c: lebih buruk dari ini → minta konfirmasi pin
 SUMBER_LOKASI = ("exif", "gps", "manual")
 
 
@@ -90,6 +91,34 @@ def validasi_masukan(foto: list[bytes], lat: float, lon: float, sumber_lokasi: s
         raise TidakValid(f"Keterangan maksimal {MAKS_KETERANGAN} karakter.")
 
 
+def cari_kandidat_duplikat(lat: float, lon: float) -> list[KandidatDuplikat]:
+    """BR-02: laporan aktif dalam 25 m, terdekat dulu. Tanpa identitas pelapor."""
+    return [
+        KandidatDuplikat(lap.nomor, round(jarak, 1), lap.status, lap.tingkat, jumlah_dukungan(lap.id))
+        for lap, jarak in cari_aktif_dekat(lat, lon, RADIUS_DUPLIKAT_M)
+    ]
+
+
+@dataclass(frozen=True)
+class PratinjauLokasi:
+    wilayah: HasilWilayah
+    perlu_konfirmasi_pin: bool
+    kanal_luar: tuple[str, str] | None
+    duplikat: list[KandidatDuplikat]
+
+
+def pratinjau_lokasi(lat: float, lon: float, akurasi_gps: float | None = None) -> PratinjauLokasi:
+    """FR-WIL-01/02 + FR-PEL-05: wilayah, Sudin tujuan, kebutuhan konfirmasi pin (BR-01c), duplikat (BR-02).
+
+    Diport dari jalanku-v0@65db419 ``app/jalanku/api.py`` ``POST /api/lokasi`` (karya Yosua).
+    """
+    wilayah = tentukan_wilayah(lat, lon)
+    if not wilayah.di_dalam or wilayah.instansi is None:
+        return PratinjauLokasi(wilayah, False, KANAL_LUAR_WILAYAH, [])
+    perlu_pin = akurasi_gps is not None and akurasi_gps > AKURASI_PIN_MAKS_M
+    return PratinjauLokasi(wilayah, perlu_pin, None, cari_kandidat_duplikat(lat, lon))
+
+
 def _pesan(laporan: Laporan, instansi: Instansi) -> str:
     if laporan.status == STATUS_BELUM:
         return f"Terima kasih! Laporanmu sudah diteruskan ke {instansi.nama_pendek}."
@@ -126,14 +155,9 @@ def kirim_laporan(
         )
 
     if not abaikan_duplikat:
-        dekat = cari_aktif_dekat(lat, lon, RADIUS_DUPLIKAT_M)
-        if dekat:
-            raise DuplikatDitemukan(
-                [
-                    KandidatDuplikat(lap.nomor, round(jarak, 1), lap.status, lap.tingkat, jumlah_dukungan(lap.id))
-                    for lap, jarak in dekat
-                ]
-            )
+        kandidat = cari_kandidat_duplikat(lat, lon)
+        if kandidat:
+            raise DuplikatDitemukan(kandidat)
 
     hasil_foto = [periksa_foto(data) for data in foto]
     keputusan = putuskan(hasil_foto)
