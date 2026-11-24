@@ -17,6 +17,7 @@ from jalanku.core import Konflik, TidakValid, batasi
 from jalanku.modules.ai import periksa_foto, putuskan
 from jalanku.modules.akun import Pengguna
 from jalanku.modules.laporan import (
+    PELAKU_AI,
     STATUS_AKTIF,
     STATUS_BELUM,
     STATUS_DITOLAK,
@@ -25,6 +26,8 @@ from jalanku.modules.laporan import (
     ambil_laporan,
     buat_laporan,
     cari_aktif_dekat,
+    cari_laporan,
+    daftar_foto,
     jumlah_dukungan,
     tambah_dukungan,
 )
@@ -145,6 +148,26 @@ def dukung_laporan(pengguna: Pengguna, nomor: str) -> HasilDukung:
     batasi(f"dukung:{pengguna.id}", BATAS_DUKUNG_PER_JAM, JENDELA_DETIK, "Batas 60 dukungan per jam tercapai.")
     baru = tambah_dukungan(lap.id, pengguna.id)
     return HasilDukung(lap.nomor, jumlah_dukungan(lap.id), baru)
+
+
+@dataclass(frozen=True)
+class ItemLaporanSaya:
+    laporan: Laporan
+    foto_id: int | None
+    bisa_banding: bool
+
+
+def laporan_saya(pengguna: Pengguna) -> list[ItemLaporanSaya]:
+    """FR-PEL-07: laporan milik pengguna ini saja, terbaru dulu.
+
+    ``bisa_banding``: hanya penolakan oleh AI dan belum pernah dibanding (BR-03: sekali).
+    """
+    hasil = []
+    for lap in cari_laporan(pelapor_id=pengguna.id):
+        foto = daftar_foto(lap.id)
+        bisa_banding = lap.status == STATUS_DITOLAK and lap.diperiksa_oleh == PELAKU_AI and lap.banding_pada is None
+        hasil.append(ItemLaporanSaya(lap, foto[0].id if foto else None, bisa_banding))
+    return hasil
 
 
 def _pesan(laporan: Laporan, instansi: Instansi) -> str:

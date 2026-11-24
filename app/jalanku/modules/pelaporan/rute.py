@@ -1,8 +1,12 @@
 """Endpoint alur warga. Pemilik: M3.
 
-STUB: semua endpoint mengembalikan 501. Orkestrasi yang diharapkan untuk POST /api/laporan
-(UC-02): batasi 10/jam → wilayah.tentukan_wilayah → cek duplikat (laporan.cari_aktif_dekat)
-→ ai.periksa_foto per foto → ai.putuskan → laporan.buat_laporan(LaporanBaru(...)).
+Empat endpoint: ``POST /api/lokasi`` (US-04, US-09), ``POST /api/laporan`` (US-03),
+``POST /api/laporan/{nomor}/dukung`` (US-10), ``GET /api/saya/laporan`` (US-11). Berkas ini hanya
+menerjemahkan HTTP; logikanya ada di ``layanan.py``.
+
+Orkestrasi ``POST /api/laporan`` (UC-02): batasi 10/jam → validasi 1–3 foto → wilayah.tentukan_wilayah
+→ cek duplikat (laporan.cari_aktif_dekat, 25 m) → ai.periksa_foto per foto → ai.putuskan
+→ laporan.buat_laporan(LaporanBaru(...)).
 """
 
 from __future__ import annotations
@@ -13,11 +17,11 @@ from fastapi import APIRouter, Depends, File, Form, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse
 
-from jalanku.core import BelumDibuat
 from jalanku.modules.akun import Pengguna, wajib_masuk, wajib_terverifikasi
 
 from .layanan import MAKS_BYTE_FOTO, DuplikatDitemukan, dukung_laporan
 from .layanan import kirim_laporan as kirim
+from .layanan import laporan_saya as saya
 from .layanan import pratinjau_lokasi as pratinjau
 from .skema import (
     DukunganKeluaran,
@@ -110,4 +114,16 @@ def dukung(nomor: str, pengguna: Pengguna = Depends(wajib_terverifikasi)):
 
 @router.get("/api/saya/laporan", response_model=list[LaporanSayaKeluaran], summary="FR-PEL-07 laporan saya")
 def laporan_saya(pengguna: Pengguna = Depends(wajib_masuk)):
-    raise BelumDibuat("US-11", "M3")
+    return [
+        LaporanSayaKeluaran(
+            nomor=i.laporan.nomor,
+            status=i.laporan.status,
+            tingkat=i.laporan.tingkat,
+            kota=i.laporan.kota,
+            kecamatan=i.laporan.kecamatan,
+            dibuat_pada=i.laporan.dibuat_pada,
+            foto_url=f"/api/foto/{i.foto_id}" if i.foto_id else None,
+            bisa_banding=i.bisa_banding,
+        )
+        for i in saya(pengguna)
+    ]
