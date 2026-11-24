@@ -41,6 +41,10 @@ def test_dua_poligon_dan_tepi_bersama(simulasi):
     assert wilayah.tentukan_wilayah(-6.5, 103) == wilayah.HasilWilayah(False, None, None, None)
 
 
+def test_kanal_luar_wilayah_sp4n_lapor():
+    assert wilayah.KANAL_LUAR_WILAYAH == ("SP4N-LAPOR!", "https://www.lapor.go.id/")
+
+
 def test_endpoint_batas(klien, simulasi):
     respons = klien.get("/api/wilayah")
     assert respons.status_code == 200
