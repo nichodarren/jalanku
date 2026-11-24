@@ -15,13 +15,18 @@
 
 Hanya nama di `__all__` pada [`__init__.py`](__init__.py). Tanda tangan terkunci di `app/kontrak/modul.json`; endpoint di `app/kontrak/openapi.json` (lihat juga `/api/docs` saat server jalan). Mengubah yang sudah ada = change request (issue template *Change request*); menambah sesuatu yang opsional cukup PR biasa + `python -m jalanku kontrak --tulis`.
 
-## Status stub (baseline 19 Nov 2026)
+## Status
 
-Pelanggan kejadian terpasang tetapi belum menyimpan apa pun; endpoint 501. Cari `TODO(` di folder ini.
+US-25 selesai (21 Nov 2026):
+
+- **Kabar:** setiap `StatusBerubah` → kabar untuk pelapor + `laporan.pendukung()` yang notifikasinya aktif (bawaan aktif). Pelapor tidak dikabari tindakannya sendiri (banding); kejadian tidak membawa id pelaku, jadi pengecualian dilakukan per peran.
+- **Endpoint (wajib masuk, hanya data sendiri):** `GET /api/notifikasi` (terbaru dulu, maks. 100), `POST /api/notifikasi/{id}/dibaca` (404 untuk kabar orang lain), `GET`/`PUT /api/notifikasi/pengaturan`.
+- **Privasi:** `AkunDihapus` → kabar & pengaturan pengguna itu dihapus.
+- **Frontend:** `#/kabar` (daftar, penanda belum dibaca, klik = buka detail + tandai dibaca, sakelar notifikasi).
 
 ## Pekerjaan
 
-- [ ] US-25: buat kabar untuk pelapor + `laporan.pendukung()` yang pengaturannya aktif; endpoint daftar, dibaca, pengaturan
+- [x] US-25: buat kabar untuk pelapor + `laporan.pendukung()` yang pengaturannya aktif; endpoint daftar, dibaca, pengaturan
 
 ## Cara kerja di modul ini
 
