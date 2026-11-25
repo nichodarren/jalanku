@@ -1,0 +1,13 @@
+# Hanya masukkan sumber aplikasi dan lock dependency ke build context.
+**
+!Dockerfile
+!requirements.lock
+!jalanku/
+!jalanku/**
+**/__pycache__/
+**/*.pyc
+**/tests/
+**/.env
+**/.env.*
+**/*.db
+**/*.sqlite*
