@@ -1,0 +1,37 @@
+name: Smoke test container
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t jalanku-smoke .
+
+      - name: Uji health check dan akses volume
+        run: |
+          docker volume create jalanku-smoke-data
+          docker run -d --name jalanku-smoke -p 127.0.0.1:18000:8000 \
+            -v jalanku-smoke-data:/data jalanku-smoke
+          curl --fail --silent --show-error --retry 20 --retry-connrefused \
+            --retry-delay 2 --max-time 3 http://127.0.0.1:18000/api/kesehatan \
+            | jq -e '.status == "ok"'
+          docker exec jalanku-smoke sh -ec 'test "$(id -u)" -ne 0; touch /data/.smoke'
+          docker run --rm -v jalanku-smoke-data:/data --entrypoint sh jalanku-smoke \
+            -ec 'test -f /data/.smoke'
+
+      - name: Log container saat gagal
+        if: failure()
+        run: docker logs jalanku-smoke || true
