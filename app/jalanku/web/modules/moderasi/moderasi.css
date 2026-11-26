@@ -1,0 +1,54 @@
+/* Gaya modul moderasi (#/admin, US-12/13/14). Pemilik: M5.
+   Warna dari token shared/gaya.css; tanpa atribut style= di JS (CSP style-src 'self'). */
+
+.daftar-mod { display: grid; gap: 12px; }
+
+.kartu-mod {
+  background: var(--warna-kartu); border: 1px solid var(--warna-garis); border-radius: var(--radius); padding: 12px;
+}
+.kartu-mod.banding { border: 2px solid var(--warna-kurang-baik); }
+.kartu-mod h2 { font-size: 1rem; margin: 0 0 6px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.kartu-mod p { margin: 0 0 6px; }
+
+/* Teks gelap di oranye (putih di oranye cuma 3,08:1). */
+.lencana-banding {
+  display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; font-weight: 700;
+  background: var(--warna-kurang-baik); color: var(--warna-teks);
+}
+.catatan-banding { font-weight: 600; }
+
+.grid-foto-mod { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin: 8px 0; }
+.foto-mod { margin: 0; }
+.foto-mod img {
+  width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; border: 1px solid var(--warna-garis);
+  background: var(--warna-latar);
+}
+.foto-mod figcaption { font-size: 0.85rem; color: var(--warna-redup); margin-top: 4px; }
+
+.info-duplikat { background: var(--warna-latar); border-radius: 8px; padding: 8px; }
+
+.baris-tombol { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; align-items: stretch; }
+.tombol {
+  min-height: var(--sentuh-min); padding: 8px 14px; border-radius: 8px; font-weight: 600;
+  border: 1px solid var(--warna-utama); background: var(--warna-kartu); color: var(--warna-utama);
+}
+.tombol.utama { background: var(--warna-utama); color: #fff; }
+.tombol.bahaya { background: var(--warna-rusak); border-color: var(--warna-rusak); color: #fff; }
+.tombol:disabled { opacity: 0.6; cursor: progress; }
+
+.tolak { margin-top: 10px; }
+.tolak summary {
+  min-height: var(--sentuh-min); display: flex; align-items: center; cursor: pointer;
+  color: var(--warna-rusak); font-weight: 600;
+}
+.form-tolak { display: grid; gap: 4px; padding-top: 6px; border-top: 1px dashed var(--warna-garis); }
+.form-tolak label { font-size: 0.9rem; }
+
+.form-paket .baris-tombol input { flex: 1 1 160px; width: auto; }
+.paket h2 { font-size: 1.1rem; margin: 0 0 8px; }
+.paket h2:focus { outline: none; }
+.teks-paket { font-family: ui-monospace, Consolas, monospace; font-size: 0.85rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kartu-mod, .paket { scroll-behavior: auto; transition: none; }
+}
