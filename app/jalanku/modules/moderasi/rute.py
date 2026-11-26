@@ -49,7 +49,7 @@ def koreksi(nomor: str, masukan: KoreksiMasukan, pengguna: Pengguna = Depends(ad
 
 @router.get("/api/admin/laporan/{nomor}/paket", response_model=PaketKeluaran, summary="FR-MOD-04 paket penerusan")
 def paket(nomor: str, pengguna: Pengguna = Depends(admin)):
-    raise BelumDibuat("US-14", "M5")
+    return layanan.paket(nomor)
 
 
 @router.post("/api/laporan/{nomor}/banding", response_model=AksiKeluaran, summary="FR-MOD-02 minta peninjauan (sekali)")
