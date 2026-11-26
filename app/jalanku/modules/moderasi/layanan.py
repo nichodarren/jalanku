@@ -18,6 +18,7 @@ from jalanku.modules.laporan import (
 )
 
 TINGKAT_SAH = {TINGKAT_KURANG_BAIK, TINGKAT_RUSAK}
+MIN_ALASAN = 5  # samakan dengan syarat BR-03 di laporan.ubah_status
 
 
 def antrean() -> list[dict]:
@@ -68,8 +69,8 @@ def verifikasi(nomor: str, tingkat: str, pengguna_id: int) -> dict:
 
 def tolak(nomor: str, alasan: str, pengguna_id: int, label: str | None = None) -> dict:
     alasan_bersih = alasan.strip()
-    if len(alasan_bersih) < 3:
-        raise TidakValid("Alasan penolakan minimal 3 karakter.")
+    if len(alasan_bersih) < MIN_ALASAN:
+        raise TidakValid(f"Alasan penolakan wajib diisi (minimal {MIN_ALASAN} karakter).")
     lap = ambil_laporan(nomor)
     if lap.status != STATUS_MENUNGGU:
         raise Konflik("Hanya laporan berstatus menunggu_verifikasi yang bisa ditolak.")

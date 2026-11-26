@@ -39,6 +39,20 @@ def test_tolak_dengan_alasan_dan_label_serta_validasi_alasan(buat_klien, bikin_l
     assert ambil_laporan(lap.nomor).label_akhir == "bukan_jalan"
 
 
+def test_tolak_alasan_batas_5_karakter_sama_dengan_br03(buat_klien, bikin_laporan):
+    admin = buat_klien("admin")
+    lap = bikin_laporan()
+    # Lolos skema (>= 3 karakter mentah) tetapi setelah spasi dibuang tinggal 2 / 4 karakter.
+    for alasan in ("  ab ", " Bura "):
+        pendek = admin.post(f"/api/admin/laporan/{lap.nomor}/tolak", json={"alasan": alasan})
+        assert pendek.status_code == 400
+        assert pendek.json()["detail"] == "Alasan penolakan wajib diisi (minimal 5 karakter)."
+    assert ambil_laporan(lap.nomor).status != STATUS_DITOLAK
+    pas = admin.post(f"/api/admin/laporan/{lap.nomor}/tolak", json={"alasan": "Buram"})
+    assert pas.status_code == 200
+    assert pas.json()["status"] == STATUS_DITOLAK
+
+
 def test_gabung_induk_aktif_diri_sendiri_400_dan_induk_tidak_aktif_409(buat_klien, bikin_laporan):
     admin = buat_klien("admin")
     induk = bikin_laporan(status_awal=STATUS_BELUM)
