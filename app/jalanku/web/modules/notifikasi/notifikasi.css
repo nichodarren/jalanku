@@ -1,0 +1,15 @@
+/* Halaman kabar (US-25). Pemilik: M1. Warna hanya lewat token di shared/gaya.css. */
+
+.kabar-sakelar { display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; min-height: var(--sentuh-min); }
+.kabar-sakelar input { width: 22px; min-height: 22px; height: 22px; margin: 0; }
+
+.daftar-kabar { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.kabar a {
+  display: grid; grid-template-columns: auto 1fr; column-gap: 10px; row-gap: 2px; align-items: start;
+  padding: 12px 14px; min-height: var(--sentuh-min); border-radius: var(--radius);
+  background: var(--warna-kartu); border: 1px solid var(--warna-garis); color: var(--warna-teks); text-decoration: none;
+}
+.kabar a > :not(.kabar-titik) { grid-column: 2; }
+.kabar.baru a { border-left: 4px solid var(--warna-utama); }
+.kabar.baru .kabar-pesan { font-weight: 700; }
+.kabar-titik { grid-column: 1; grid-row: 1; width: 10px; height: 10px; margin-top: 6px; border-radius: 50%; background: var(--warna-utama); }

@@ -2,7 +2,7 @@
 
 <!-- 1–3 kalimat. Judul PR: Conventional Commits + ID, mis. "feat(peta): bubble berkelompok (US-15)" -->
 
-Menutup: #<!-- nomor issue -->  ·  Story/CR: <!-- US-NN / CR-NN -->  ·  Modul: <!-- nama modul -->
+Closes #<!-- nomor issue; kata kunci Closes wajib bahasa Inggris supaya issue tertutup otomatis -->  ·  Story/CR: <!-- US-NN / CR-NN -->  ·  Modul: <!-- nama modul -->
 
 ## Cara menguji
 

@@ -1,13 +1,13 @@
 """Perilaku domain laporan yang SUDAH dijamin sejak baseline (dipakai modul lain).
 
-M1 menambah test untuk TODO(TS-02): foto tanpa EXIF, syarat transisi, visibilitas foto.
+Test TS-02 ada di berkas terpisah: `test_foto.py`, `test_transisi.py`, dan `test_visibilitas.py`.
 """
 
 from __future__ import annotations
 
 import pytest
 
-from conftest import TITIK
+from conftest import TITIK, foto_bytes
 from jalanku.core import Konflik, langganan
 from jalanku.core.kejadian import terbitkan
 from jalanku.modules import laporan
@@ -24,7 +24,7 @@ def _baru(keputusan="terverifikasi", tingkat="rusak", titik="monas", pelapor_id=
         kota="Jakarta Pusat",
         kecamatan="Gambir",
         instansi_id="SUDIN_JP",
-        foto=[b"\xff\xd8 foto uji"],
+        foto=[foto_bytes()],
         keputusan_ai=keputusan,
         tingkat=tingkat if keputusan == "terverifikasi" else None,
         **lain,
@@ -110,7 +110,7 @@ def test_hasil_ai_foto_sesudah_tampil_publik(klien):
         lap.nomor,
         laporan.STATUS_SELESAI,
         laporan.PELAKU_PETUGAS,
-        foto_sesudah=b"\xff\xd8 foto sesudah",
+        foto_sesudah=foto_bytes(warna=(200, 200, 200)),
         hasil_ai_sesudah={"kelas": "baik", "keputusan": "terima", "alasan": "Jalan tampak sudah baik"},
     )
     foto = klien.get(f"/api/laporan/{lap.nomor}").json()["foto"]
@@ -120,7 +120,6 @@ def test_hasil_ai_foto_sesudah_tampil_publik(klien):
     assert sesudah["hasil_ai"]["kelas"] == "baik"
 
 
-def test_jejak_audit_terdaftar_tapi_belum_dibuat(klien):
-    """US-32 masih stub: endpoint ada di kontrak, menjawab 501."""
-    lap = laporan.buat_laporan(_baru())
-    assert klien.get(f"/api/laporan/{lap.nomor}/jejak").status_code == 501
+def test_jejak_audit_terdaftar_di_kontrak(klien):
+    """US-32: endpoint jejak ada di kontrak OpenAPI. Perilakunya diuji di ``test_jejak.py``."""
+    assert "/api/laporan/{nomor}/jejak" in klien.get("/api/openapi.json").json()["paths"]

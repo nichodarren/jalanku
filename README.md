@@ -34,6 +34,7 @@ Requires Python 3.12+ (the team uses 3.13).
 cd app
 python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
 pip install -r requirements.lock && pip install -e . --no-deps
+python -m jalanku.modules.wilayah.data.setup_wilayah  # once: district boundaries (GADM, not redistributed)
 python -m pytest                                       # all tests must pass
 python -m jalanku contoh-data                          # seed SIMULATED sample reports
 python -m jalanku jalan --reload                       # http://localhost:8000 · API docs at /api/docs

@@ -41,9 +41,13 @@ function bolehLihat(r) {
 function gambarNavigasi() {
   const nav = document.getElementById("navigasi");
   kosongkan(nav);
+  const hash = location.hash || RUTE_AWAL;
   for (const r of SEMUA_RUTE.filter((r) => r.menu && bolehLihat(r))) {
-    nav.append(el("a", { href: r.jalur, class: location.hash.startsWith(r.jalur) ? "aktif" : "" }, r.judul));
+    const aktif = hash.startsWith(r.jalur);
+    nav.append(el("a", { href: r.jalur, class: aktif ? "aktif" : "", "aria-current": aktif ? "page" : null }, r.judul));
   }
+  // Di layar sempit menu menjadi bar bawah yang bisa digeser: pastikan menu aktif kelihatan.
+  nav.querySelector("a.aktif")?.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
 function cocokkan(hash) {
@@ -80,7 +84,7 @@ async function tampilkan() {
   } catch (galat) {
     wadah.append(el("p", { class: "galat", role: "alert" }, galat.message || String(galat)));
   }
-  wadah.focus();
+  wadah.focus({ preventScroll: true }); // fokus untuk pembaca layar tanpa membuat halaman melompat
 }
 
 window.addEventListener("hashchange", tampilkan);
