@@ -17,12 +17,12 @@ Hanya nama di `__all__` pada [`__init__.py`](__init__.py). Tanda tangan terkunci
 
 ## Status stub (baseline 19 Nov 2026)
 
-Semua endpoint 501 dengan skema lengkap; otorisasi Admin sudah bekerja. Cari `TODO(` di folder ini.
+Sudah aktif: antrean, verifikasi, tolak, gabung (US-12), banding (US-13). Masih 501: paket (US-14), koreksi tingkat (US-21). Cari `TODO(` di folder ini.
 
 ## Pekerjaan
 
 - [x] US-12: antrean = `laporan.cari_laporan(status=STATUS_MENUNGGU)` urut banding dulu; aksi lewat `laporan.ubah_status(..., pelaku=PELAKU_ADMIN, label_akhir=...)`
-- [ ] US-13: banding hanya bila `diperiksa_oleh == 'ai'` dan `banding_pada is None`
+- [x] US-13: banding hanya bila `diperiksa_oleh == 'ai'` dan `banding_pada is None`
 - [ ] US-14: paket penerusan tanpa identitas (test eksplisit: email & nama pelapor tidak muncul)
 - [ ] US-21: koreksi → `laporan.ubah_tingkat` + baris `moderasi_koreksi`
 

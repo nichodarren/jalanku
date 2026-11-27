@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from jalanku.core import Konflik, TidakValid
+from jalanku.core import Konflik, TidakBerhak, TidakValid
+from jalanku.modules.akun import Pengguna
 from jalanku.modules.laporan import (
     PELAKU_ADMIN,
+    PELAKU_PELAPOR,
     STATUS_AKTIF,
     STATUS_BELUM,
     STATUS_DIGABUNG,
@@ -11,6 +13,7 @@ from jalanku.modules.laporan import (
     TINGKAT_KURANG_BAIK,
     TINGKAT_RUSAK,
     ambil_laporan,
+    ambil_untuk_penonton,
     cari_aktif_dekat,
     cari_laporan,
     daftar_foto,
@@ -105,5 +108,26 @@ def gabung(nomor: str, induk_nomor: str, pengguna_id: int) -> dict:
         pengguna_id=pengguna_id,
         induk_nomor=induk.nomor,
         catatan=f"Digabung ke {induk.nomor}",
+    )
+    return {"nomor": hasil.nomor, "status": hasil.status, "tingkat": hasil.tingkat}
+
+
+def banding(nomor: str, pengguna: Pengguna) -> dict:
+    """US-13: pelapor meminta Admin meninjau penolakan AI (sekali per laporan).
+
+    Syarat "hanya penolakan AI" dan "sekali" ditegakkan BR-03 di ``laporan.ubah_status``.
+    Laporan yang tidak boleh dilihat pengguna (BR-06) dijawab 404 oleh ``ambil_untuk_penonton``.
+    """
+    lap = ambil_untuk_penonton(nomor, pengguna)
+    if lap.pelapor_id != pengguna.id:
+        raise TidakBerhak("Hanya pelapor yang bisa meminta peninjauan.")
+    if lap.status != STATUS_DITOLAK:
+        raise Konflik("Peninjauan hanya bisa diminta untuk laporan yang ditolak.")
+    hasil = ubah_status(
+        nomor,
+        STATUS_MENUNGGU,
+        PELAKU_PELAPOR,
+        pengguna_id=pengguna.id,
+        catatan="Pelapor meminta peninjauan Admin",
     )
     return {"nomor": hasil.nomor, "status": hasil.status, "tingkat": hasil.tingkat}

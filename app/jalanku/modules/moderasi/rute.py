@@ -54,4 +54,4 @@ def paket(nomor: str, pengguna: Pengguna = Depends(admin)):
 
 @router.post("/api/laporan/{nomor}/banding", response_model=AksiKeluaran, summary="FR-MOD-02 minta peninjauan (sekali)")
 def banding(nomor: str, pengguna: Pengguna = Depends(wajib_terverifikasi)):
-    raise BelumDibuat("US-13", "M5")
+    return layanan.banding(nomor, pengguna)
