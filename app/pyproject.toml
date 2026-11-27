@@ -38,6 +38,7 @@ dev = [
   "pytest-cov>=5,<8",
   "httpx>=0.27,<1",
   "ruff>=0.6,<1",
+  "pytest-playwright>=0.7,<1",  # test sistem lewat browser (tests/sistem, QA M5)
 ]
 
 [build-system]
@@ -52,7 +53,8 @@ include = ["jalanku*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "jalanku"]
-addopts = "-q --strict-markers"
+# Test sistem (browser) tidak ikut run biasa/CI; jalankan terpisah: python -m pytest -m sistem
+addopts = "-q --strict-markers -m 'not sistem'"
 filterwarnings = ["ignore:Using `httpx` with `starlette.testclient`"]
 markers = [
   "lambat: test yang butuh model AI asli atau data besar",
