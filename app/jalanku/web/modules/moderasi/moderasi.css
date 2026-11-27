@@ -44,6 +44,10 @@
 .form-tolak { display: grid; gap: 4px; padding-top: 6px; border-top: 1px dashed var(--warna-garis); }
 .form-tolak label { font-size: 0.9rem; }
 
+.koreksi summary { min-height: var(--sentuh-min); display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+.form-koreksi { display: grid; gap: 4px; padding-top: 6px; }
+.form-koreksi label { font-size: 0.9rem; }
+
 .form-paket .baris-tombol input { flex: 1 1 160px; width: auto; }
 .paket h2 { font-size: 1.1rem; margin: 0 0 8px; }
 .paket h2:focus { outline: none; }

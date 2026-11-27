@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends
 
-from jalanku.core import BelumDibuat
 from jalanku.modules.akun import PERAN_ADMIN, Pengguna, wajib_peran, wajib_terverifikasi
 
 from . import layanan
@@ -44,7 +43,7 @@ def gabung(nomor: str, masukan: GabungMasukan, pengguna: Pengguna = Depends(admi
 
 @router.post("/api/admin/laporan/{nomor}/tingkat", response_model=AksiKeluaran, summary="FR-MOD-03 koreksi tingkat")
 def koreksi(nomor: str, masukan: KoreksiMasukan, pengguna: Pengguna = Depends(admin)):
-    raise BelumDibuat("US-21", "M5")
+    return layanan.koreksi(nomor, masukan.tingkat, masukan.alasan, pengguna.id)
 
 
 @router.get("/api/admin/laporan/{nomor}/paket", response_model=PaketKeluaran, summary="FR-MOD-04 paket penerusan")

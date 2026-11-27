@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from jalanku.core import Konflik, TidakBerhak, TidakValid, pengaturan
+from jalanku.core import Konflik, TidakBerhak, TidakValid, pengaturan, sekarang, transaksi
 from jalanku.modules.akun import Pengguna
 from jalanku.modules.laporan import (
     PELAKU_ADMIN,
@@ -20,6 +20,7 @@ from jalanku.modules.laporan import (
     daftar_foto,
     jumlah_dukungan,
     ubah_status,
+    ubah_tingkat,
 )
 from jalanku.modules.wilayah import ambil_instansi
 
@@ -172,3 +173,30 @@ def paket(nomor: str) -> dict:
         "kanal_url": instansi.kanal_url,
         "teks": teks,
     }
+
+
+def koreksi(nomor: str, tingkat: str, alasan: str, pengguna_id: int) -> dict:
+    """US-21: Admin mengoreksi tingkat kerusakan laporan terverifikasi yang belum selesai.
+
+    Tingkat diubah lewat ``laporan.ubah_tingkat`` (juga mencatat timeline); jejak koreksi
+    (lama → baru, alasan, Admin) disimpan di tabel milik modul ini, ``moderasi_koreksi``,
+    sebagai bahan metrik AI (label akhir Admin).
+    """
+    if tingkat not in TINGKAT_SAH:
+        raise TidakValid("Tingkat kerusakan harus kurang_baik atau rusak.")
+    alasan_bersih = alasan.strip()
+    if len(alasan_bersih) < MIN_ALASAN:
+        raise TidakValid(f"Alasan koreksi wajib diisi (minimal {MIN_ALASAN} karakter).")
+    lap = ambil_laporan(nomor)
+    if lap.status not in STATUS_BISA_DITERUSKAN:
+        raise Konflik("Koreksi tingkat hanya untuk laporan terverifikasi yang belum selesai.")
+    if tingkat == lap.tingkat:
+        raise TidakValid("Tingkat baru sama dengan tingkat sekarang.")
+    hasil = ubah_tingkat(nomor, tingkat, pengguna_id, alasan_bersih)
+    with transaksi() as kon:
+        kon.execute(
+            """INSERT INTO moderasi_koreksi (laporan_id, admin_id, tingkat_lama, tingkat_baru, alasan, waktu)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (lap.id, pengguna_id, lap.tingkat, tingkat, alasan_bersih, sekarang()),
+        )
+    return {"nomor": hasil.nomor, "status": hasil.status, "tingkat": hasil.tingkat}
