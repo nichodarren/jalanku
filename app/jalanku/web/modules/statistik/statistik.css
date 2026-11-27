@@ -1,0 +1,39 @@
+/* Gaya modul statistik (#/statistik, US-23). Pemilik: M5.
+   Warna dari token shared/gaya.css; tanpa atribut style= di JS (CSP style-src 'self'). */
+
+.label-simulasi {
+  border-left: 4px solid var(--warna-kurang-baik); background: var(--warna-kartu);
+  padding: 8px 12px; border-radius: 8px; font-weight: 600;
+}
+
+.grup-chip { border: 0; margin: 0 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.grup-chip legend { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; padding: 0; }
+.chip {
+  min-height: var(--sentuh-min); background: var(--warna-kartu); color: var(--warna-teks);
+  border: 1px solid var(--warna-garis); border-radius: 999px; padding: 8px 14px; font-size: 0.9rem;
+}
+.chip[aria-pressed="true"] { background: var(--warna-utama); border-color: var(--warna-utama); color: #fff; }
+
+.daftar-stat { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.kartu-stat {
+  background: var(--warna-kartu); border: 1px solid var(--warna-garis); border-radius: var(--radius); padding: 12px;
+}
+.kartu-stat h2 { font-size: 1rem; margin: 0 0 8px; }
+
+.angka-status { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 0 0 8px; }
+.angka-status div { border: 1px solid var(--warna-garis); border-radius: 8px; padding: 6px; border-top-width: 4px; }
+.angka-status dt { font-size: 0.8rem; color: var(--warna-redup); }
+.angka-status dd { margin: 0; font-size: 1.3rem; font-weight: 700; }
+.status-belum-dikerjakan { border-top-color: var(--warna-redup); }
+.status-sedang-dikerjakan { border-top-color: var(--warna-dikerjakan); }
+.status-selesai { border-top-color: var(--warna-selesai); }
+
+.angka-median { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0; }
+.median dt { font-size: 0.85rem; font-weight: 600; }
+.median dd { margin: 0; }
+.median dd:nth-of-type(1) { font-size: 1.1rem; font-weight: 700; }
+.median .redup { font-size: 0.8rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kartu-stat, .chip { transition: none; }
+}

@@ -17,11 +17,11 @@ Hanya nama di `__all__` pada [`__init__.py`](__init__.py). Tanda tangan terkunci
 
 ## Status stub (baseline 19 Nov 2026)
 
-Semua endpoint 501 dengan skema lengkap. Cari `TODO(` di folder ini.
+Sudah aktif: `GET /api/statistik` + halaman `#/statistik` (US-23). Masih 501: `POST /api/statistik/kejadian` (US-24).
 
 ## Pekerjaan
 
-- [ ] US-23: median jam terverifikasi → sedang dikerjakan / → selesai per instansi; null bila n < 5
+- [x] US-23: median jam terverifikasi → sedang dikerjakan / → selesai per instansi; null bila n < 5
 - [ ] US-24: `POST /api/statistik/kejadian` (buka_status) + dua metrik A3
 
 ## Cara kerja di modul ini
