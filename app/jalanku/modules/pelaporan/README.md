@@ -21,7 +21,7 @@ Semua endpoint 501 dengan skema lengkap. Cari `TODO(` di folder ini.
 
 ## Pekerjaan
 
-- [ ] US-03: `POST /api/laporan` (1–3 foto, maks 10 MB, rate limit 10/jam, 409 bila ada duplikat dan `abaikan_duplikat=false`)
+- [x] US-03: `POST /api/laporan` (1–3 foto, maks 10 MB, rate limit 10/jam, 409 bila ada duplikat dan `abaikan_duplikat=false`)
 - [ ] US-04: frontend membaca GPS EXIF di perangkat (port `exif.js` dari jalanku-v0), GPS perangkat, pin manual; kompres ≤ 1 MB
 - [ ] US-09/US-10: `POST /api/lokasi` (wilayah + duplikat 25 m), `POST /api/laporan/{nomor}/dukung`
 - [ ] US-11: `GET /api/saya/laporan`
