@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from jalanku.core import Konflik, TidakBerhak, TidakValid
+from jalanku.core import Konflik, TidakBerhak, TidakValid, pengaturan
 from jalanku.modules.akun import Pengguna
 from jalanku.modules.laporan import (
     PELAKU_ADMIN,
@@ -10,6 +10,7 @@ from jalanku.modules.laporan import (
     STATUS_DIGABUNG,
     STATUS_DITOLAK,
     STATUS_MENUNGGU,
+    STATUS_SEDANG,
     TINGKAT_KURANG_BAIK,
     TINGKAT_RUSAK,
     ambil_laporan,
@@ -17,11 +18,15 @@ from jalanku.modules.laporan import (
     cari_aktif_dekat,
     cari_laporan,
     daftar_foto,
+    jumlah_dukungan,
     ubah_status,
 )
+from jalanku.modules.wilayah import ambil_instansi
 
 TINGKAT_SAH = {TINGKAT_KURANG_BAIK, TINGKAT_RUSAK}
 MIN_ALASAN = 5  # samakan dengan syarat BR-03 di laporan.ubah_status
+STATUS_BISA_DITERUSKAN = (STATUS_BELUM, STATUS_SEDANG)
+LABEL_TINGKAT = {TINGKAT_KURANG_BAIK: "Kurang Baik", TINGKAT_RUSAK: "Rusak"}
 
 
 def antrean() -> list[dict]:
@@ -131,3 +136,39 @@ def banding(nomor: str, pengguna: Pengguna) -> dict:
         catatan="Pelapor meminta peninjauan Admin",
     )
     return {"nomor": hasil.nomor, "status": hasil.status, "tingkat": hasil.tingkat}
+
+
+def paket(nomor: str) -> dict:
+    """US-14: ringkasan siap salin untuk kanal resmi instansi tujuan.
+
+    NFR-PRI-01: sengaja tidak menyentuh data pelapor (nama, email, id) sama sekali.
+    Hanya laporan terverifikasi yang masih perlu ditangani yang bisa diteruskan.
+    """
+    lap = ambil_laporan(nomor)
+    if lap.status not in STATUS_BISA_DITERUSKAN:
+        raise Konflik("Paket penerusan hanya untuk laporan terverifikasi yang belum selesai.")
+    instansi = ambil_instansi(lap.instansi_id)
+    dasar = pengaturan().url_dasar
+    foto = [f"{dasar}/api/foto/{f.id}" for f in daftar_foto(lap.id) if f.jenis == "bukti"]
+    koordinat = f"{lap.lat:.6f}, {lap.lon:.6f}"
+    tautan_peta = f"https://www.google.com/maps?q={lap.lat:.6f},{lap.lon:.6f}"
+    teks = "\n".join(
+        [
+            f"Laporan jalan rusak {lap.nomor} (via JalanKu)",
+            f"Tujuan: {instansi.nama}",
+            f"Lokasi: Kec. {lap.kecamatan or '-'}, {lap.kota or '-'}, DKI Jakarta",
+            f"Koordinat: {koordinat} ({tautan_peta})",
+            f"Tingkat kerusakan: {LABEL_TINGKAT.get(lap.tingkat or '', '-')}",
+            f"Didukung oleh {jumlah_dukungan(lap.id)} warga lain",
+            f"Keterangan: {lap.keterangan or '-'}",
+            f"Foto: {', '.join(foto) if foto else '-'}",
+            f"Status publik: {dasar}/#/laporan/{lap.nomor}",
+        ]
+    )
+    return {
+        "nomor": lap.nomor,
+        "instansi_id": instansi.id,
+        "kanal_nama": instansi.kanal_nama,
+        "kanal_url": instansi.kanal_url,
+        "teks": teks,
+    }
