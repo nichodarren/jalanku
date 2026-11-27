@@ -46,7 +46,7 @@ def test_jalur_rute_tetap_dan_hanya_admin():
 def test_memakai_kontrak_moderasi():
     kode = _baca("index.js")
     assert '"/api/admin/antrean"' in kode
-    for aksi in ("/verifikasi`", "/tolak`", "/gabung`", "/paket`"):
+    for aksi in ("/verifikasi`", "/tolak`", "/gabung`", "/paket`", "/tingkat`"):
         assert aksi in kode, aksi
     for field in ("tingkat:", "alasan:", "label:", "induk_nomor:"):
         assert field in kode, field
@@ -57,12 +57,16 @@ def test_memakai_kontrak_moderasi():
         assert field not in kode, field
 
 
-def test_batas_alasan_tolak_di_form_sama_dengan_server(klien):
-    skema = klien.get("/api/openapi.json").json()["components"]["schemas"]["TolakMasukan"]
-    maks = skema["properties"]["alasan"]["maxLength"]
+def test_batas_alasan_tolak_dan_koreksi_di_form_sama_dengan_server(klien):
+    skema = klien.get("/api/openapi.json").json()["components"]["schemas"]
+    maks_tolak = skema["TolakMasukan"]["properties"]["alasan"]["maxLength"]
+    maks_koreksi = skema["KoreksiMasukan"]["properties"]["alasan"]["maxLength"]
     kode = _baca("index.js")
-    # Minimal 5 = syarat BR-03 di laporan.ubah_status & moderasi.tolak (lebih ketat dari skema 3).
-    assert re.findall(r'name: "alasan",[^}]*minlength: "(\d+)",\s*maxlength: "(\d+)"', kode) == [("5", str(maks))]
+    # Minimal 5 = syarat moderasi.tolak/koreksi (BR-03), lebih ketat dari skema 3.
+    assert re.findall(r'name: "alasan",[^}]*minlength: "(\d+)",\s*maxlength: "(\d+)"', kode) == [
+        ("5", str(maks_tolak)),
+        ("5", str(maks_koreksi)),
+    ]
 
 
 def test_tautan_kanal_resmi_aman():

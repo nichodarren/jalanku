@@ -1,6 +1,6 @@
 // Frontend modul moderasi: #/admin (US-12 antrean + verifikasi/tolak/gabung, US-13 banding di atas,
-// US-14 paket penerusan). Pemilik: M5. Kontrak: GET /api/admin/antrean,
-// POST /api/admin/laporan/{nomor}/verifikasi|tolak|gabung, GET /api/admin/laporan/{nomor}/paket.
+// US-14 paket penerusan, US-21 koreksi tingkat). Pemilik: M5. Kontrak: GET /api/admin/antrean,
+// POST /api/admin/laporan/{nomor}/verifikasi|tolak|gabung|tingkat, GET /api/admin/laporan/{nomor}/paket.
 // Diport dari jalanku-v0 app/jalanku/web/js/views/admin.js (tab Antrean, karya Yosua), disesuaikan:
 // field skema ItemAntreanKeluaran, form tolak langsung di kartu (bukan pindah ke detail), paket
 // penerusan tampil setelah verifikasi + bisa diambil per nomor, warna lewat moderasi.css (CSP),
@@ -274,6 +274,75 @@ function formAmbilPaket(wadahPaket) {
   );
 }
 
+/** US-21: koreksi tingkat laporan terverifikasi (sudah tidak ada di antrean, jadi lewat nomor). */
+function formKoreksi() {
+  const nomor = el("input", {
+    id: "nomor-koreksi",
+    name: "nomor",
+    required: true,
+    placeholder: "JK-00001",
+    pattern: "JK-\\d{5}",
+    autocomplete: "off",
+  });
+  const tingkat = el(
+    "select",
+    { id: "tingkat-koreksi", name: "tingkat", required: true },
+    el("option", { value: "rusak" }, LABEL_TINGKAT.rusak),
+    el("option", { value: "kurang_baik" }, LABEL_TINGKAT.kurang_baik),
+  );
+  const alasan = el("textarea", {
+    id: "alasan-koreksi",
+    name: "alasan",
+    rows: "2",
+    required: true,
+    minlength: "5",
+    maxlength: "200",
+  });
+  const pesan = el("p", { class: "galat", role: "alert", hidden: true });
+  const tombol = el("button", { type: "submit", class: "tombol" }, "Simpan koreksi");
+  const form = el(
+    "form",
+    {
+      class: "form-koreksi",
+      onsubmit: async (e) => {
+        e.preventDefault();
+        pesan.hidden = true;
+        const isi = alasan.value.trim();
+        if (isi.length < MIN_ALASAN) {
+          alasan.setCustomValidity(`Alasan minimal ${MIN_ALASAN} karakter.`);
+          alasan.reportValidity();
+          return;
+        }
+        alasan.setCustomValidity("");
+        tombol.disabled = true;
+        try {
+          const no = nomor.value.trim().toUpperCase();
+          const hasil = await api.post(`/api/admin/laporan/${encodeURIComponent(no)}/tingkat`, {
+            tingkat: tingkat.value,
+            alasan: isi,
+          });
+          umumkan(`Tingkat ${hasil.nomor} kini ${LABEL_TINGKAT[hasil.tingkat] || hasil.tingkat}.`);
+          form.reset();
+        } catch (galat) {
+          pesan.textContent = galat.message;
+          pesan.hidden = false;
+        } finally {
+          tombol.disabled = false;
+        }
+      },
+    },
+    el("label", { for: "nomor-koreksi" }, "Nomor laporan terverifikasi"),
+    nomor,
+    el("label", { for: "tingkat-koreksi" }, "Tingkat yang benar"),
+    tingkat,
+    el("label", { for: "alasan-koreksi" }, `Alasan koreksi (wajib, ${MIN_ALASAN}–200 karakter)`),
+    alasan,
+    pesan,
+    el("div", { class: "baris-tombol" }, tombol),
+  );
+  return el("details", { class: "kartu koreksi" }, el("summary", {}, "Koreksi tingkat kerusakan"), form);
+}
+
 async function halamanAdmin(wadah) {
   muatCss();
   const wadahPaket = el("div", { "aria-live": "polite" });
@@ -289,6 +358,7 @@ async function halamanAdmin(wadah) {
     ),
     wadahPaket,
     formAmbilPaket(wadahPaket),
+    formKoreksi(),
     info,
     daftar,
   );
